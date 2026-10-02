@@ -36,10 +36,19 @@ work around them.
 
 ### Cloud is free tier only
 
-GCP, free tier only. No always-on VM, no Cloud SQL, no Memorystore, no NAT gateway, no
-fixed-cost load balancer, no committed use, no paid SKU. Prefer scale-to-zero (Cloud Run with
-minimum instances 0) and request-billed storage. A design that needs a paid resource is a
-decision for the owner, in writing, before any code.
+GCP, and "free tier" means **Always Free SKUs**, not the $300 / 90-day trial credit. The
+credit funds any SKU, so leaning on it buys a bill on day 91 and turns billing on for the
+project. Treat it as absent.
+
+- No Cloud SQL, no Memorystore, no NAT gateway, no fixed-cost load balancer, no committed
+  use, no paid SKU.
+- Prefer scale-to-zero (Cloud Run with minimum instances 0) and request-billed storage.
+- No always-on VM, with exactly one exception: the Always Free `e2-micro` (one per month, in
+  `us-central1`, `us-west1` or `us-east1`, 30GB standard disk, 1GB egress). It exists for the
+  one workload that cannot run request-billed, the socket, which holds a long-lived upstream
+  connection and needs a stable endpoint. Nothing else belongs on it, and 1GB of egress is a
+  real ceiling for a fanout service, so measure before trusting it.
+- Anything else paid is the owner's decision, in writing, before any code.
 
 ### Data is minimised
 
