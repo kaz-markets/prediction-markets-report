@@ -1,0 +1,12 @@
+name: okf
+
+on:
+  pull_request:
+
+jobs:
+  # The report itself is the front end here, so there is no frontend-guard job.
+  okf:
+    uses: kaz-markets/.github/.github/workflows/okf.yml@main
+    with:
+      bundle: knowledge
+      index: knowledge/INDEX.md
