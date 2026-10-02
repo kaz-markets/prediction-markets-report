@@ -9,10 +9,31 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/*.egg-info/
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+.coverage.*
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Node (render tooling, if any)
+node_modules/
 
 # macOS
 .DS_Store
+Thumbs.db
 
 # Editors
 .idea/
 .vscode/
+*.swp
+*~
