@@ -1,0 +1,1095 @@
+{
+  "captured_at": "2026-10-02T01:22:51Z",
+  "source": "anonymous public endpoints only",
+  "kalshi": {
+    "series_total_in_elections_category": 1989,
+    "us_series_count": 462,
+    "us_series_sample": [
+      {
+        "ticker": "SENATEPARTYHI",
+        "title": "Hawaii Senate race",
+        "frequency": "custom"
+      },
+      {
+        "ticker": "KXSECSTATEIL",
+        "title": "Illinois Secretary of State winner",
+        "frequency": "custom"
+      },
+      {
+        "ticker": "HOUSECA47",
+        "title": "House CA 47",
+        "frequency": "one_off"
+      },
+      {
+        "ticker": "KXPRESPERSON",
+        "title": "Pres person",
+        "frequency": "custom"
+      },
+      {
+        "ticker": "HOUSEIA3",
+        "title": "House IA 3",
+        "frequency": "one_off"
+      },
+      {
+        "ticker": "KXSENATERIR",
+        "title": "KXSENATERIR",
+        "frequency": "one_off"
+      },
+      {
+        "ticker": "KXSENATESDR",
+        "title": "South Dakora Republican Senate nominee?",
+        "frequency": "one_off"
+      },
+      {
+        "ticker": "KXHOUSETURNOUT",
+        "title": "Voter turnout in the national House popular vote?",
+        "frequency": "one_off"
+      },
+      {
+        "ticker": "KXSECSTATENC",
+        "title": "NC Sec State",
+        "frequency": "one_off"
+      },
+      {
+        "ticker": "GOVPARTYMN",
+        "title": "Minnesota Governor",
+        "frequency": "custom"
+      },
+      {
+        "ticker": "HOUSEAZ7S",
+        "title": "AZ 7 special",
+        "frequency": "one_off"
+      },
+      {
+        "ticker": "KXGOVARNOMD",
+        "title": "Arkansas GOP governor nominee",
+        "frequency": "one_off"
+      },
+      {
+        "ticker": "KXGOVIANOMR",
+        "title": "Gov IA Nom R",
+        "frequency": "one_off"
+      },
+      {
+        "ticker": "HOUSECA21",
+        "title": "CA-21",
+        "frequency": "one_off"
+      },
+      {
+        "ticker": "KXGOVMDNOMR",
+        "title": "Gov MD Nom R",
+        "frequency": "one_off"
+      }
+    ],
+    "sampled_series": 40,
+    "open_events_in_sample": 37,
+    "open_markets_in_sample": 263,
+    "per_series": [
+      {
+        "series": "KXHOUSEWINSTATE",
+        "events": 18,
+        "markets": 102
+      },
+      {
+        "series": "KXPRESNOMD",
+        "events": 1,
+        "markets": 48
+      },
+      {
+        "series": "KXPRESOUTCOME",
+        "events": 1,
+        "markets": 32
+      },
+      {
+        "series": "KXPRESPERSON",
+        "events": 1,
+        "markets": 31
+      },
+      {
+        "series": "KXGOVSENDIFF",
+        "events": 2,
+        "markets": 15
+      },
+      {
+        "series": "KXHOUSETURNOUT",
+        "events": 1,
+        "markets": 9
+      },
+      {
+        "series": "KXSECSTATEIL",
+        "events": 1,
+        "markets": 2
+      },
+      {
+        "series": "HOUSECA47",
+        "events": 1,
+        "markets": 2
+      },
+      {
+        "series": "HOUSEIA3",
+        "events": 1,
+        "markets": 2
+      },
+      {
+        "series": "GOVPARTYMN",
+        "events": 1,
+        "markets": 2
+      },
+      {
+        "series": "HOUSECA21",
+        "events": 1,
+        "markets": 2
+      },
+      {
+        "series": "HOUSENY3",
+        "events": 1,
+        "markets": 2
+      },
+      {
+        "series": "SENATEWV",
+        "events": 1,
+        "markets": 2
+      },
+      {
+        "series": "GOVPARTYWY",
+        "events": 1,
+        "markets": 2
+      },
+      {
+        "series": "KXHOUSEUT02",
+        "events": 1,
+        "markets": 2
+      }
+    ],
+    "example": {
+      "_score": 681.6500999999989,
+      "event_ticker": "HOUSECA47-26",
+      "title": "Will Democratic win the House race for CA-47?",
+      "yes_sub_title": "Dave Min",
+      "yes_bid": "0.9310",
+      "yes_ask": "0.9340",
+      "last_price": "0.9310",
+      "volume": "5049.26",
+      "open_interest": "3252.61",
+      "close_time": "2027-11-03T15:00:00Z",
+      "ticker": "HOUSECA47-26-D",
+      "orderbook": {
+        "orderbook_fp": {
+          "no_dollars": [
+            [
+              "0.0010",
+              "51000.00"
+            ],
+            [
+              "0.0080",
+              "1175.00"
+            ],
+            [
+              "0.0090",
+              "104.00"
+            ],
+            [
+              "0.0100",
+              "1.00"
+            ],
+            [
+              "0.0120",
+              "44.00"
+            ],
+            [
+              "0.0130",
+              "36.00"
+            ],
+            [
+              "0.0650",
+              "529.17"
+            ],
+            [
+              "0.0660",
+              "140.83"
+            ]
+          ],
+          "yes_dollars": [
+            [
+              "0.0100",
+              "527376.00"
+            ],
+            [
+              "0.3100",
+              "31741.00"
+            ],
+            [
+              "0.3600",
+              "550.00"
+            ],
+            [
+              "0.3900",
+              "1876.00"
+            ],
+            [
+              "0.6100",
+              "1528.00"
+            ],
+            [
+              "0.8600",
+              "20.00"
+            ],
+            [
+              "0.8800",
+              "500.00"
+            ],
+            [
+              "0.9200",
+              "10.00"
+            ],
+            [
+              "0.9300",
+              "38.00"
+            ],
+            [
+              "0.9310",
+              "69.00"
+            ]
+          ]
+        }
+      },
+      "candlesticks": {
+        "candlesticks": [
+          {
+            "end_period_ts": 1789704000,
+            "open_interest_fp": "2345.00",
+            "price": {
+              "previous_dollars": "0.9430"
+            },
+            "volume_fp": "0.00",
+            "yes_ask": {
+              "close_dollars": "0.9600",
+              "high_dollars": "0.9600",
+              "low_dollars": "0.9500",
+              "open_dollars": "0.9600"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9230",
+              "high_dollars": "0.9500",
+              "low_dollars": "0.0010",
+              "open_dollars": "0.9230"
+            }
+          },
+          {
+            "end_period_ts": 1789790400,
+            "open_interest_fp": "2348.00",
+            "price": {
+              "close_dollars": "0.9600",
+              "high_dollars": "0.9600",
+              "low_dollars": "0.9590",
+              "mean_dollars": "0.9597",
+              "open_dollars": "0.9590",
+              "previous_dollars": "0.9430"
+            },
+            "volume_fp": "10.38",
+            "yes_ask": {
+              "close_dollars": "0.9600",
+              "high_dollars": "0.9600",
+              "low_dollars": "0.9590",
+              "open_dollars": "0.9600"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9260",
+              "high_dollars": "0.9260",
+              "low_dollars": "0.6100",
+              "open_dollars": "0.9230"
+            }
+          },
+          {
+            "end_period_ts": 1789876800,
+            "open_interest_fp": "2348.00",
+            "price": {
+              "previous_dollars": "0.9600"
+            },
+            "volume_fp": "0.00",
+            "yes_ask": {
+              "close_dollars": "0.9600",
+              "high_dollars": "0.9600",
+              "low_dollars": "0.9600",
+              "open_dollars": "0.9600"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9250",
+              "high_dollars": "0.9260",
+              "low_dollars": "0.6100",
+              "open_dollars": "0.9260"
+            }
+          },
+          {
+            "end_period_ts": 1789963200,
+            "open_interest_fp": "2348.00",
+            "price": {
+              "previous_dollars": "0.9600"
+            },
+            "volume_fp": "0.00",
+            "yes_ask": {
+              "close_dollars": "0.9600",
+              "high_dollars": "0.9600",
+              "low_dollars": "0.9600",
+              "open_dollars": "0.9600"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9250",
+              "high_dollars": "0.9250",
+              "low_dollars": "0.9250",
+              "open_dollars": "0.9250"
+            }
+          },
+          {
+            "end_period_ts": 1790049600,
+            "open_interest_fp": "2348.00",
+            "price": {
+              "previous_dollars": "0.9600"
+            },
+            "volume_fp": "0.00",
+            "yes_ask": {
+              "close_dollars": "0.9600",
+              "high_dollars": "0.9600",
+              "low_dollars": "0.9600",
+              "open_dollars": "0.9600"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9250",
+              "high_dollars": "0.9250",
+              "low_dollars": "0.9250",
+              "open_dollars": "0.9250"
+            }
+          },
+          {
+            "end_period_ts": 1790136000,
+            "open_interest_fp": "2348.00",
+            "price": {
+              "previous_dollars": "0.9600"
+            },
+            "volume_fp": "0.00",
+            "yes_ask": {
+              "close_dollars": "0.9860",
+              "high_dollars": "0.9900",
+              "low_dollars": "0.9600",
+              "open_dollars": "0.9600"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9260",
+              "high_dollars": "0.9300",
+              "low_dollars": "0.9230",
+              "open_dollars": "0.9250"
+            }
+          },
+          {
+            "end_period_ts": 1790222400,
+            "open_interest_fp": "2348.00",
+            "price": {
+              "previous_dollars": "0.9600"
+            },
+            "volume_fp": "0.00",
+            "yes_ask": {
+              "close_dollars": "0.9840",
+              "high_dollars": "0.9890",
+              "low_dollars": "0.9500",
+              "open_dollars": "0.9860"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9250",
+              "high_dollars": "0.9280",
+              "low_dollars": "0.6100",
+              "open_dollars": "0.9260"
+            }
+          },
+          {
+            "end_period_ts": 1790308800,
+            "open_interest_fp": "2348.00",
+            "price": {
+              "previous_dollars": "0.9600"
+            },
+            "volume_fp": "0.00",
+            "yes_ask": {
+              "close_dollars": "0.9900",
+              "high_dollars": "0.9900",
+              "low_dollars": "0.9770",
+              "open_dollars": "0.9840"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9350",
+              "high_dollars": "0.9360",
+              "low_dollars": "0.6100",
+              "open_dollars": "0.9250"
+            }
+          },
+          {
+            "end_period_ts": 1790395200,
+            "open_interest_fp": "2348.00",
+            "price": {
+              "previous_dollars": "0.9600"
+            },
+            "volume_fp": "0.00",
+            "yes_ask": {
+              "close_dollars": "0.9810",
+              "high_dollars": "0.9900",
+              "low_dollars": "0.9810",
+              "open_dollars": "0.9900"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9360",
+              "high_dollars": "0.9480",
+              "low_dollars": "0.6100",
+              "open_dollars": "0.9350"
+            }
+          },
+          {
+            "end_period_ts": 1790481600,
+            "open_interest_fp": "2348.00",
+            "price": {
+              "previous_dollars": "0.9600"
+            },
+            "volume_fp": "0.00",
+            "yes_ask": {
+              "close_dollars": "0.9810",
+              "high_dollars": "0.9900",
+              "low_dollars": "0.9810",
+              "open_dollars": "0.9810"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9360",
+              "high_dollars": "0.9360",
+              "low_dollars": "0.9360",
+              "open_dollars": "0.9360"
+            }
+          },
+          {
+            "end_period_ts": 1790568000,
+            "open_interest_fp": "2348.00",
+            "price": {
+              "previous_dollars": "0.9600"
+            },
+            "volume_fp": "0.00",
+            "yes_ask": {
+              "close_dollars": "0.9810",
+              "high_dollars": "0.9900",
+              "low_dollars": "0.9810",
+              "open_dollars": "0.9810"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9360",
+              "high_dollars": "0.9380",
+              "low_dollars": "0.9350",
+              "open_dollars": "0.9360"
+            }
+          },
+          {
+            "end_period_ts": 1790654400,
+            "open_interest_fp": "2348.00",
+            "price": {
+              "previous_dollars": "0.9600"
+            },
+            "volume_fp": "0.00",
+            "yes_ask": {
+              "close_dollars": "0.9710",
+              "high_dollars": "0.9890",
+              "low_dollars": "0.9710",
+              "open_dollars": "0.9810"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9360",
+              "high_dollars": "0.9360",
+              "low_dollars": "0.9360",
+              "open_dollars": "0.9360"
+            }
+          },
+          {
+            "end_period_ts": 1790740800,
+            "open_interest_fp": "3291.61",
+            "price": {
+              "close_dollars": "0.9250",
+              "high_dollars": "0.9480",
+              "low_dollars": "0.8900",
+              "mean_dollars": "0.9272",
+              "open_dollars": "0.9380",
+              "previous_dollars": "0.9600"
+            },
+            "volume_fp": "1906.08",
+            "yes_ask": {
+              "close_dollars": "0.9450",
+              "high_dollars": "0.9710",
+              "low_dollars": "0.8900",
+              "open_dollars": "0.9710"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9200",
+              "high_dollars": "0.9470",
+              "low_dollars": "0.6200",
+              "open_dollars": "0.9360"
+            }
+          },
+          {
+            "end_period_ts": 1790827200,
+            "open_interest_fp": "3267.61",
+            "price": {
+              "close_dollars": "0.9380",
+              "high_dollars": "0.9380",
+              "low_dollars": "0.9380",
+              "mean_dollars": "0.9380",
+              "open_dollars": "0.9380",
+              "previous_dollars": "0.9250"
+            },
+            "volume_fp": "24.00",
+            "yes_ask": {
+              "close_dollars": "0.9390",
+              "high_dollars": "0.9680",
+              "low_dollars": "0.9290",
+              "open_dollars": "0.9450"
+            },
+            "yes_bid": {
+              "close_dollars": "0.9320",
+              "high_dollars": "0.9400",
+              "low_dollars": "0.9200",
+              "open_dollars": "0.9200"
+            }
+          }
+        ],
+        "ticker": "HOUSECA47-26-D"
+      },
+      "american_yes": "-1,349",
+      "cents_yes": 93.1
+    }
+  },
+  "polymarket": {
+    "tags_used": [
+      {
+        "id": "100344",
+        "slug": "house-races",
+        "label": "House Races"
+      },
+      {
+        "id": "103388",
+        "slug": "thailand-election",
+        "label": "Thailand Election"
+      }
+    ],
+    "us_election_market_count": 635,
+    "resolved_us_election_count": 747,
+    "us_election_markets": [
+      {
+        "condition_id": "0x836b850fc838195374862551a36f1c8691d96ff01e58b0a071f0fc1a0e357fb1",
+        "question": "Will LeBron James win the 2028 US Presidential Election?",
+        "slug": "will-lebron-james-win-the-2028-us-presidential-election",
+        "volume": 54884195.764108,
+        "liquidity": 2439034.05379,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0005",
+          "0.9995"
+        ],
+        "cents_yes": 0.05,
+        "american_yes": "+199,900",
+        "token_ids": [
+          "39223330966352513418907732239455948906399882924787587183466504819170775983376",
+          "50862799703982327636174441241062907649998751737045006653560124656563256528691"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0xe06a7e94cf2fa8dc2085b7610fe16e9be1cde6654f34d365c13da1149b276c61",
+        "question": "Will Oprah Winfrey win the 2028 Democratic presidential nomination?",
+        "slug": "will-oprah-winfrey-win-the-2028-democratic-presidential-nomination",
+        "volume": 54431476.594328985,
+        "liquidity": 2878121.51381,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0005",
+          "0.9995"
+        ],
+        "cents_yes": 0.05,
+        "american_yes": "+199,900",
+        "token_ids": [
+          "2213957649161627793381994368131485505647723208738124952452819345058597751695",
+          "44046525152074436753629616217525652949736205933417533647338274649282385796755"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x30cfb887558b20373a984da60c372fe5a90c0296aa6d8bb413a8aa7543846da2",
+        "question": "Will Bernie Sanders win the 2028 Democratic presidential nomination?",
+        "slug": "will-bernie-sanders-win-the-2028-democratic-presidential-nomination-879",
+        "volume": 52818548.516984016,
+        "liquidity": 859288.86414,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0065",
+          "0.9935"
+        ],
+        "cents_yes": 0.65,
+        "american_yes": "+15,285",
+        "token_ids": [
+          "113510300123120868861281132282742729065975487298059944817273881893086209196585",
+          "3444964147133304300560138317203877470064591148213906708394693248804691192318"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0xf2e51acfbb6d0414dc2ace81b7dc2af7c165e443dcb91f6caa7aab6d6ab4f06d",
+        "question": "Will Chelsea Clinton win the 2028 Democratic presidential nomination?",
+        "slug": "will-chelsea-clinton-win-the-2028-democratic-presidential-nomination",
+        "volume": 50607624.154245,
+        "liquidity": 545544.43378,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.007",
+          "0.993"
+        ],
+        "cents_yes": 0.7,
+        "american_yes": "+14,186",
+        "token_ids": [
+          "46211769122513729244602558513001215391004042100934296321661285791281233261657",
+          "76057920052421891902791411567177996435483774677774664174053982044923692373687"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x450810ae738a0ff820d3248f2b24937f63fb8c8cf422ed2a915125adb4d9d3c8",
+        "question": "Will Andrew Yang win the 2028 Democratic presidential nomination?",
+        "slug": "will-andrew-yang-win-the-2028-democratic-presidential-nomination",
+        "volume": 48908330.34060401,
+        "liquidity": 2556550.48049,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0005",
+          "0.9995"
+        ],
+        "cents_yes": 0.05,
+        "american_yes": "+199,900",
+        "token_ids": [
+          "102504892414163237174864879683522880588750452841477290216845150938663289742135",
+          "21234886083000978203440582985665409733123024063268807484684316771005736994028"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0xae70ab9bf1c3726fe430a2ba8b517697ae24e0f0ab554b876a5b521153068882",
+        "question": "Will Tim Walz win the 2028 US Presidential Election?",
+        "slug": "will-tim-walz-win-the-2028-us-presidential-election",
+        "volume": 44835788.12510299,
+        "liquidity": 2280859.56947,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0005",
+          "0.9995"
+        ],
+        "cents_yes": 0.05,
+        "american_yes": "+199,900",
+        "token_ids": [
+          "2638997461401140008448476093092229850740161649668999975101243681118238509713",
+          "31711509411930636383466083293019394636501894118049148509527295292186501260570"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x1945a8b23e313ed7423b6b6fd556f9ab5578900376b565a61dc480a5f4f35d21",
+        "question": "Will Hunter Biden win the 2028 Democratic presidential nomination?",
+        "slug": "will-person-a-win-the-2028-democratic-presidential-nomination",
+        "volume": 44551502.271218054,
+        "liquidity": 1202293.06624,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0025",
+          "0.9975"
+        ],
+        "cents_yes": 0.25,
+        "american_yes": "+39,900",
+        "token_ids": [
+          "11343337042526652606304508556838778144915122118685013460142819817079620240439",
+          "19117858613830240204442128472263675815111662346578092643025820800380629933012"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0xd1747284d6048b2a3dcfbee489db405f36de18f9590197dd0e5c9f0c246bf050",
+        "question": "Will Byron Donalds win the 2028 Republican presidential nomination?",
+        "slug": "will-byron-donalds-win-the-2028-republican-presidential-nomination",
+        "volume": 44428949.145070024,
+        "liquidity": 2039700.11742,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0015",
+          "0.9985"
+        ],
+        "cents_yes": 0.15,
+        "american_yes": "+66,567",
+        "token_ids": [
+          "311624663652221737215322113380496984764966764039692273354641152455298576851",
+          "43292374563904271719486871569114922516560719431752184778538513591321835161630"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x663b88d3a8f2341bb8d878709dc78632bcaf7512e577bd15521e5d8ed933efbc",
+        "question": "Will Hillary Clinton win the 2028 Democratic presidential nomination?",
+        "slug": "will-hillary-clinton-win-the-2028-democratic-presidential-nomination",
+        "volume": 44178974.881273024,
+        "liquidity": 2778872.86196,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0015",
+          "0.9985"
+        ],
+        "cents_yes": 0.15,
+        "american_yes": "+66,567",
+        "token_ids": [
+          "6349038249650226718426900942104344803413105653564595362433352811865798195800",
+          "57931882677606943294773135604094039468334392354204920135953322654005083822055"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x8b203037c7c0e21b500314f8398d2a8ea294b7ce1f4f9185f426425a3505bc45",
+        "question": "Will LeBron James win the 2028 Democratic presidential nomination?",
+        "slug": "will-lebron-james-win-the-2028-democratic-presidential-nomination",
+        "volume": 44145354.81742702,
+        "liquidity": 2747314.46405,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0005",
+          "0.9995"
+        ],
+        "cents_yes": 0.05,
+        "american_yes": "+199,900",
+        "token_ids": [
+          "100561779829530520068956424581003844045516012444425572625523659025114550346085",
+          "46254744034025107660239982269249567113656697231872036621777316158933638064598"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x41c6341dd79903aca4bb0c29f5a7976946c3774d2fd72f38cbb7de7092144520",
+        "question": "Will Mike Pence win the 2028 Republican presidential nomination?",
+        "slug": "will-mike-pence-win-the-2028-republican-presidential-nomination",
+        "volume": 43715546.14943103,
+        "liquidity": 1833911.48251,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0015",
+          "0.9985"
+        ],
+        "cents_yes": 0.15,
+        "american_yes": "+66,567",
+        "token_ids": [
+          "110467341601356058460373968989438018821471776813704553223329002744055822742107",
+          "11478861872612841666414979216747716059947331582670297431884562915546151249374"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x3265b10daeb30dbcc3214bd02e488551d0a5d3028392f4152e4750b943fbfc91",
+        "question": "Will Tim Walz win the 2028 Democratic presidential nomination?",
+        "slug": "will-tim-walz-win-the-2028-democratic-presidential-nomination-475",
+        "volume": 43512376.50342799,
+        "liquidity": 2769112.91588,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0005",
+          "0.9995"
+        ],
+        "cents_yes": 0.05,
+        "american_yes": "+199,900",
+        "token_ids": [
+          "104464678880204778606895232389511543522030897731392516718349574106843434770446",
+          "90935594925886073322524509252821043048115343298080885997215308777385571383769"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x822e61527476cabf98927e3aad385c5ecdae7086f945535f2c1fd9ae8dbfa46e",
+        "question": "Will George Clooney win the 2028 Democratic presidential nomination?",
+        "slug": "will-george-clooney-win-the-2028-democratic-presidential-nomination",
+        "volume": 43455722.61337497,
+        "liquidity": 2695340.40154,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0005",
+          "0.9995"
+        ],
+        "cents_yes": 0.05,
+        "american_yes": "+199,900",
+        "token_ids": [
+          "48218088132821386640274752564592889805082274744128282833036735027928992155024",
+          "5645396948464928632054207670692862818297222862819597089648758232622731040046"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x0f8ef3cc906ba7ba94a44724738df44bdd5f73e59e40c9c8b4ff8569e349643c",
+        "question": "Will Kim Kardashian win the 2028 Democratic presidential nomination?",
+        "slug": "will-kim-kardashian-win-the-2028-democratic-presidential-nomination",
+        "volume": 42920729.308171,
+        "liquidity": 2728983.93628,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0005",
+          "0.9995"
+        ],
+        "cents_yes": 0.05,
+        "american_yes": "+199,900",
+        "token_ids": [
+          "55087250670040717711131370018408221134109122974378698780636020561523521220754",
+          "108145967398435925971960442906832714254932011684365058146885679351681137451999"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x29283b56d3eec6d1d89fff51793d9d2e01579d2379b1d3e9ebda175d3561e809",
+        "question": "Will Phil Murphy win the 2028 Democratic presidential nomination?",
+        "slug": "will-phil-murphy-win-the-2028-democratic-presidential-nomination-611",
+        "volume": 42897400.19536502,
+        "liquidity": 2508445.67859,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0015",
+          "0.9985"
+        ],
+        "cents_yes": 0.15,
+        "american_yes": "+66,567",
+        "token_ids": [
+          "81633484456710374417231462107666791993850637546563366185897100962157481970040",
+          "114507466536734360808195115190160357255467689128176113085692265197019898971527"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x8ecd1d15e521b7d1020ad5596cc981c8764e9dcfbc3648f582e1a5138aee7185",
+        "question": "Will Beto O\u2019Rourke win the 2028 Democratic presidential nomination?",
+        "slug": "will-beto-orourke-win-the-2028-democratic-presidential-nomination",
+        "volume": 42815224.40664797,
+        "liquidity": 2810890.79006,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0005",
+          "0.9995"
+        ],
+        "cents_yes": 0.05,
+        "american_yes": "+199,900",
+        "token_ids": [
+          "37126434962149084556522721025504254258386171468763869879755961635390358765833",
+          "2426274669138238576933962603416907393958833898063513872892433203206006096668"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0xc44edcfdedb422bae8ff1803e2178d1ee025fc41efd81400ccbede709e018841",
+        "question": "Will MrBeast win the 2028 Democratic presidential nomination?",
+        "slug": "will-mrbeast-win-the-2028-democratic-presidential-nomination",
+        "volume": 41011596.981763,
+        "liquidity": 2800198.70513,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0005",
+          "0.9995"
+        ],
+        "cents_yes": 0.05,
+        "american_yes": "+199,900",
+        "token_ids": [
+          "51035537065442638321333063915918274102446051033989435618245745345113522914516",
+          "93910251767329056141706007839545721784238465183449597462421810827705938093892"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x7f695758278e6d4d9e63df862afa88d664d3402a3d26e4d32ae05121cdbddba6",
+        "question": "Will Kim Kardashian win the 2028 US Presidential Election?",
+        "slug": "will-kim-kardashian-win-the-2028-us-presidential-election",
+        "volume": 40321265.743616,
+        "liquidity": 2061860.4848,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0005",
+          "0.9995"
+        ],
+        "cents_yes": 0.05,
+        "american_yes": "+199,900",
+        "token_ids": [
+          "24863363384036117015867671383779186335047493791693657275104567365292353535818",
+          "44632793419668141561343859504077903947361590865219599333832862239708628173864"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x3535fb2f4aef6619dde8b367cb5e5d209526bb496d5d9778428c58a0252435e3",
+        "question": "Will Zohran Mamdani win the 2028 Democratic presidential nomination?",
+        "slug": "will-zohran-mamdani-win-the-2028-democratic-presidential-nomination-445",
+        "volume": 38954944.12321006,
+        "liquidity": 2624642.88697,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0015",
+          "0.9985"
+        ],
+        "cents_yes": 0.15,
+        "american_yes": "+66,567",
+        "token_ids": [
+          "19323997520040734631220675039559156784534982703459512097490198935565229528445",
+          "111309365336519526711604102518316708823622751854213281307404397618571408959194"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      },
+      {
+        "condition_id": "0x46dbd48d6bde5b81edb480e0f676a2cdda6c6b592c4d86a9367c7ad5a9870195",
+        "question": "Will Liz Cheney win the 2028 Democratic presidential nomination?",
+        "slug": "will-liz-cheney-win-the-2028-democratic-presidential-nomination-551",
+        "volume": 38539695.24262201,
+        "liquidity": 2798172.2755,
+        "outcomes": [
+          "Yes",
+          "No"
+        ],
+        "outcome_prices": [
+          "0.0005",
+          "0.9995"
+        ],
+        "cents_yes": 0.05,
+        "american_yes": "+199,900",
+        "token_ids": [
+          "41340056280794024415573839406074658402877379128871144681466050648033201160259",
+          "63802361760137863513735993346883582181207639895442036953936089060482564982249"
+        ],
+        "end_date": "2028-11-08T04:59:00Z",
+        "tag": null
+      }
+    ],
+    "total_candidates_scanned": 1769,
+    "tick_sample": {
+      "markets": 12,
+      "tokens": 24,
+      "seconds": 60
+    }
+  },
+  "tick_rate": {
+    "url": "wss://ws-subscriptions-clob.polymarket.com/ws/market",
+    "tokens": 24,
+    "seconds": 60,
+    "connected": true,
+    "messages": 61,
+    "elapsed_seconds": 63.3,
+    "messages_per_second": 0.964,
+    "messages_per_token_per_second": 0.04016,
+    "seconds_per_token_update": 24.9,
+    "by_type": {
+      "book": 26,
+      "price_change": 34,
+      "last_trade_price": 1
+    },
+    "busiest_tokens": [
+      [
+        "76057920052421891902791411567177996435483774677774664174053982044923692373687",
+        3
+      ],
+      [
+        "46211769122513729244602558513001215391004042100934296321661285791281233261657",
+        2
+      ],
+      [
+        "2638997461401140008448476093092229850740161649668999975101243681118238509713",
+        1
+      ],
+      [
+        "31711509411930636383466083293019394636501894118049148509527295292186501260570",
+        1
+      ],
+      [
+        "11478861872612841666414979216747716059947331582670297431884562915546151249374",
+        1
+      ],
+      [
+        "39223330966352513418907732239455948906399882924787587183466504819170775983376",
+        1
+      ],
+      [
+        "50862799703982327636174441241062907649998751737045006653560124656563256528691",
+        1
+      ],
+      [
+        "104464678880204778606895232389511543522030897731392516718349574106843434770446",
+        1
+      ]
+    ]
+  },
+  "elapsed_seconds": 78.9
+}

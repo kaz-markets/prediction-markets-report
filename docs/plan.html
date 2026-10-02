@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kaz-socket &mdash; architecture, cost model and the US election slice</title>
+<meta name="description" content="The kaz-socket architecture plan: the two-repo boundary, the scope decision, measured feed costs, a live cache with TTL priced against a straight relay, and the US election slice.">
+<meta name="color-scheme" content="dark">
+<style>
+:root {
+  --bg:#0c0f14; --panel:#141922; --panel-2:#1b212c; --line:#262e3b;
+  --ink:#e8edf5; --ink-dim:#9aa6b8; --ink-faint:#6b7688;
+  --accent:#5b9dff; --accent-2:#38d39f;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap { max-width:920px; margin:0 auto; padding:0 28px 96px; }
+a { color:var(--accent); text-decoration:none; }
+a:hover { text-decoration:underline; }
+code {
+  font-family:var(--mono); font-size:0.86em; background:var(--panel-2);
+  border:1px solid var(--line); border-radius:4px; padding:0.08em 0.36em;
+  color:#cfe0ff; word-break:break-word;
+}
+h1,h2,h3,h4 { line-height:1.25; margin:0 0 0.5em; letter-spacing:-0.01em; }
+h1 { font-size:2.1rem; letter-spacing:-0.03em; margin-top:2.6rem; }
+h2 { font-size:1.5rem; margin-top:2.8rem; padding-top:1.6rem; border-top:1px solid var(--line); }
+h3 { font-size:1.14rem; margin-top:2rem; }
+h4 { font-size:1rem; margin-top:1.6rem; color:var(--ink-dim); }
+p { margin:0 0 1rem; }
+ul { margin:0 0 1.2rem; padding-left:1.3rem; }
+li { margin-bottom:0.4rem; }
+hr { border:0; border-top:1px solid var(--line); margin:2.4rem 0; }
+blockquote {
+  margin:1.2rem 0; padding:0.2rem 0 0.2rem 1rem;
+  border-left:2px solid var(--accent-2); color:var(--ink-dim); font-style:italic;
+}
+header.hero { padding:56px 0 8px; }
+.eyebrow {
+  text-transform:uppercase; letter-spacing:0.18em; font-size:0.72rem;
+  color:var(--accent-2); margin:0 0 0.6rem;
+}
+header.hero p.sub { color:var(--ink-dim); font-size:1.06rem; max-width:70ch; }
+.backlink {
+  display:inline-block; margin-top:0.4rem; font-family:var(--mono); font-size:0.84rem;
+}
+.table-wrap {
+  overflow-x:auto; border:1px solid var(--line); border-radius:10px;
+  margin:1.1rem 0 1.6rem; background:var(--panel);
+}
+table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+th {
+  text-align:left; padding:11px 14px; background:var(--panel-2);
+  color:var(--ink-dim); font-weight:600; font-size:0.71rem;
+  text-transform:uppercase; letter-spacing:0.08em;
+  border-bottom:1px solid var(--line); white-space:nowrap;
+}
+td { padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+tr:last-child td { border-bottom:0; }
+tbody tr:hover { background:rgba(91,157,255,0.045); }
+.code {
+  border:1px solid var(--line); border-radius:10px; background:#0a0d12;
+  margin:0.9rem 0 1.5rem; overflow:hidden;
+}
+.code-label {
+  font-family:var(--mono); font-size:0.71rem; color:var(--ink-faint);
+  padding:8px 14px; border-bottom:1px solid var(--line); background:var(--panel);
+  text-transform:uppercase; letter-spacing:0.08em;
+}
+.code pre {
+  margin:0; padding:15px 16px; overflow-x:auto; font-family:var(--mono);
+  font-size:0.79rem; line-height:1.6; color:#b9c9e3;
+}
+.code pre code { background:none; border:0; padding:0; color:inherit; }
+figure.diagram {
+  margin:1.4rem 0 1.8rem; background:var(--panel); border:1px solid var(--line);
+  border-radius:12px; padding:16px;
+}
+figure.diagram svg { width:100%; height:auto; display:block; }
+figure.diagram figcaption {
+  color:var(--ink-dim); font-size:0.84rem; margin-top:10px; font-family:var(--mono);
+}
+.box, .box-dashed, .box-accent { stroke:#3a4658; stroke-width:1; fill:#1b212c; }
+.box-dashed { fill:#161b24; stroke-dasharray:4 3; }
+.box-accent { fill:rgba(91,157,255,0.14); stroke:#5b9dff; }
+.box-zone { fill:rgba(255,255,255,0.02); stroke:#2c3444; stroke-width:1; }
+.box-text { fill:#e8edf5; font-size:12px; font-family:var(--mono); }
+.box-sub { fill:#8b97a9; font-size:10px; font-family:var(--mono); }
+.zone-label { fill:#6b7688; font-size:10px; font-family:var(--mono); letter-spacing:0.12em; }
+.edge { stroke:#5b9dff; stroke-width:1.4; fill:none; }
+.edge-dashed { stroke:#5b9dff; stroke-width:1.4; fill:none; stroke-dasharray:4 3; opacity:0.65; }
+.arrowhead { fill:#5b9dff; }
+footer {
+  padding:36px 0 72px; color:var(--ink-faint); font-size:0.85rem;
+  border-top:1px solid var(--line); margin-top:3rem;
+}
+@media (max-width:700px){ .wrap{padding:0 18px 64px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <p class="eyebrow">Architecture plan</p>
+  <p class="sub">The service design and cost model for a prediction-market feed
+  edge, built on the measured API survey.</p>
+  <a class="backlink" href="https://danhamilt.github.io/prediction-markets-report/">Back to the API survey</a>
+</header>
+<h1 id="kaz-socket-architecture-cost-model-and-the-us-election-slice">kaz-socket: architecture, cost model and the US election slice</h1>
+<p>Status: <strong>plan</strong>. The service does not exist yet. Companion documents: the <a href="https://danhamilt.github.io/prediction-markets-report/" target="_blank" rel="noopener">API survey</a> this is built on, and the <code>kaz_skin_off_drever_onto_gcp</code> plan it pairs with.</p>
+<hr>
+<h2 id="0-where-the-plan-and-the-research-live">0. Where the plan and the research live</h2>
+<p>One repo holds both, so the plan and the evidence behind it cannot drift apart.</p>
+<div class="table-wrap"><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>`danhamilt/prediction-markets-report`</strong> (public)</td><td>The API research: what Kalshi and Polymarket expose, measured. Plus an <strong>Elections</strong> section, plus this plan.</td></tr><tr><td><strong>`danhamilt/kaz-socket`</strong> (private)</td><td>The service this document describes. Built after this plan is published.</td></tr><tr><td><strong>`danhamilt/&lt;skin repo&gt;`</strong> (private)</td><td>The bet105 skin. Already built and pushed, parked on the <code>drhamilton.dev</code> GCP account and <code>OPTIC_API_KEY</code>.</td></tr></tbody></table></div>
+<hr>
+<h2 id="1-what-changed-since-the-first-draft">1. What changed since the first draft</h2>
+<ul><li>The pros and cons of each scope option are **a report, not a decision made</li></ul>
+<p>quietly**. Section 3, and it explains &quot;outbound only&quot; in plain words.</p>
+<ul><li>A <strong>live cache with TTL, priced against a straight relay</strong>. Section 5.</li><li>The first target moved from &quot;replace Optic&quot; to **a category the incumbent</li></ul>
+<p>does not carry<strong>, then narrowed to </strong>US election markets**. Section 6.</p>
+<ul><li><strong>Rate limits and costs</strong> for Kalshi, Polymarket, Novig and Optic.</li></ul>
+<p>Section 4, with measured numbers.</p>
+<ul><li>The front end <strong>can change</strong>. Section 8.</li><li><code>kaz_skin_off_drever_onto_gcp</code> Phase 0 is <strong>complete and verified</strong>, so this</li></ul>
+<p>is the other half of a two-repo stack. Section 2.</p>
+<ul><li>A finding that was not expected: **price-history and candlestick surfaces</li></ul>
+<p>are free on both venues**, so a self-built history costs storage only. Section 4.</p>
+<hr>
+<h2 id="2-the-two-repo-boundary">2. The two-repo boundary</h2>
+<p><code>kaz_skin_off_drever_onto_gcp</code> is Phase 0 complete, Phase 1 parked.</p>
+<ul><li>Phase 0 done: socket-service revert merged, WAF back to the two original</li></ul>
+<p>origins, Route 53 records deleted, <code>kaz</code> namespace and ALBs gone, <code>deploy/kaz/</code> removed from kaz-control.</p>
+<ul><li>Phase 1 (the bet105 skin repo) is <strong>built and pushed</strong>, waiting on the</li></ul>
+<p><code>drhamilton.dev</code> GCP account and <code>OPTIC_API_KEY</code>.</p>
+<ul><li>Phase 2 asks for *&quot;a separate always-on service (its own repo or deployable)</li></ul>
+<p>that holds the feed connection and exposes the latest snapshot over an internal HTTP endpoint&quot;*, because Cloud Run scale-to-zero cannot hold a long-lived connection.</p>
+<p><strong>That separate always-on service is `kaz-socket`.</strong> The skin plan reserves the role; this plan fills it.</p>
+<p>The seam, stated once so neither plan drifts:</p>
+<div class="table-wrap"><table><thead><tr><th></th><th>kaz-socket</th><th>bet105-skin</th></tr></thead><tbody><tr><td>Owns</td><td>upstream connections, realtime fanout</td><td>SPA, HTTP API, demo balance</td></tr><tr><td>Lifecycle</td><td>always-on</td><td>scale-to-zero, stateless</td></tr><tr><td>Data</td><td>holds provider sockets</td><td>reads a snapshot over HTTP, subscribes for pushes</td></tr><tr><td>Never</td><td>renders a page, owns a bet</td><td>holds a provider socket</td></tr></tbody></table></div>
+<p>Neither hosts the other&#x27;s protocol. The drever <code>pandora.danchrow.com</code> socket stays out of both, per Phase 2&#x27;s explicit deferral.</p>
+<figure class="diagram">
+<svg viewBox="0 0 900 300" role="img"
+     aria-label="kaz-socket sits between providers and consumers">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrowhead"></path>
+    </marker>
+  </defs>
+
+  <rect x="8" y="20" width="196" height="260" rx="12" class="box-zone"></rect>
+  <text x="106" y="44" class="zone-label" text-anchor="middle">PROVIDERS</text>
+  <rect x="28" y="62" width="156" height="40" rx="8" class="box"></rect>
+  <text x="106" y="87" class="box-text" text-anchor="middle">Kalshi REST</text>
+  <rect x="28" y="116" width="156" height="40" rx="8" class="box-dashed"></rect>
+  <text x="106" y="141" class="box-text" text-anchor="middle">Kalshi WS (keyed)</text>
+  <rect x="28" y="170" width="156" height="40" rx="8" class="box"></rect>
+  <text x="106" y="195" class="box-text" text-anchor="middle">Polymarket WS</text>
+
+  <rect x="252" y="20" width="380" height="260" rx="12" class="box-zone"></rect>
+  <text x="442" y="44" class="zone-label" text-anchor="middle">KAZ-SOCKET (ALWAYS-ON)</text>
+  <rect x="272" y="62" width="340" height="44" rx="8" class="box"></rect>
+  <text x="442" y="82" class="box-text" text-anchor="middle">SourceAdapter</text>
+  <text x="442" y="97" class="box-sub" text-anchor="middle">normalise to cents</text>
+  <rect x="272" y="122" width="340" height="52" rx="8" class="box-accent"></rect>
+  <text x="442" y="144" class="box-text" text-anchor="middle">live_price + change_log</text>
+  <text x="442" y="160" class="box-sub" text-anchor="middle">TTL cache, bounded log</text>
+  <rect x="272" y="190" width="340" height="44" rx="8" class="box"></rect>
+  <text x="442" y="210" class="box-text" text-anchor="middle">fanout</text>
+  <text x="442" y="225" class="box-sub" text-anchor="middle">rooms, seq, TTL</text>
+
+  <rect x="680" y="20" width="212" height="260" rx="12" class="box-zone"></rect>
+  <text x="786" y="44" class="zone-label" text-anchor="middle">CONSUMERS</text>
+  <rect x="698" y="62" width="176" height="44" rx="8" class="box"></rect>
+  <text x="786" y="82" class="box-text" text-anchor="middle">Browsers</text>
+  <text x="786" y="97" class="box-sub" text-anchor="middle">ws ?since=seq</text>
+  <rect x="698" y="122" width="176" height="44" rx="8" class="box"></rect>
+  <text x="786" y="142" class="box-text" text-anchor="middle">bet105-skin</text>
+  <text x="786" y="157" class="box-sub" text-anchor="middle">GET snapshot</text>
+  <rect x="698" y="182" width="176" height="44" rx="8" class="box"></rect>
+  <text x="786" y="202" class="box-text" text-anchor="middle">kaz-control</text>
+  <text x="786" y="217" class="box-sub" text-anchor="middle">socket.outbox</text>
+
+  <line x1="204" y1="82" x2="268" y2="84" class="edge" marker-end="url(#arrow)"></line>
+  <line x1="204" y1="136" x2="268" y2="136" class="edge-dashed" marker-end="url(#arrow)"></line>
+  <line x1="204" y1="190" x2="268" y2="140" class="edge" marker-end="url(#arrow)"></line>
+  <line x1="442" y1="106" x2="442" y2="118" class="edge" marker-end="url(#arrow)"></line>
+  <line x1="442" y1="174" x2="442" y2="186" class="edge" marker-end="url(#arrow)"></line>
+  <line x1="612" y1="200" x2="694" y2="86" class="edge" marker-end="url(#arrow)"></line>
+  <line x1="612" y1="212" x2="694" y2="144" class="edge" marker-end="url(#arrow)"></line>
+  <line x1="612" y1="224" x2="694" y2="204" class="edge" marker-end="url(#arrow)"></line>
+</svg>
+<figcaption>The two-repo boundary. kaz-socket holds every upstream
+connection; consumers read from it and never open a provider socket.</figcaption>
+</figure>
+<hr>
+<h2 id="3-the-scope-decision">3. The scope decision</h2>
+<h3 id="the-three-options-in-plain-words">The three options in plain words</h3>
+<ul><li><strong>Inbound only.</strong> kaz-socket is the *front door for data coming in*. It</li></ul>
+<p>opens the sockets <strong>to Kalshi and Polymarket</strong> and hands the numbers to kaz-control. It holds no browser connections. Nothing a player sees changes.</p>
+<ul><li><strong>Outbound only.</strong> kaz-socket is the *loudspeaker*. It holds no provider</li></ul>
+<p>connection; it takes prices kaz-control already computed and pushes them <strong>out to browsers</strong>. It replaces the five <code>/ws/*</code> endpoints. All the data still arrives the old way.</p>
+<ul><li><strong>Both.</strong> The front door and the loudspeaker in one service.</li></ul>
+<h3 id="a-inbound-only">A. Inbound only</h3>
+<p><strong>Pros.</strong> Smallest real win, and it is the slice the election work needs. Kalshi and Polymarket are mocks today, so this makes them real. Takes snapshot pulls and socket parsing off the API event loop, which <code>STATUS.md</code> already lists as a pressure point. The seam is already defined (<code>SourceAdapter</code>, <code>QuoteSink</code>, <code>Quote</code>, <code>SourceHealth</code>), so nothing has to be invented. No auth to duplicate.</p>
+<p><strong>Cons.</strong> Does not fix delivery or scale; <code>/ws/*</code> stays single-process with no resume. Needs a kaz-control change to consume the result.</p>
+<h3 id="b-outbound-only">B. Outbound only</h3>
+<p><strong>Pros.</strong> Fixes a measured gap: two socket replicas that share no state, no resume, no rooms. Ships without touching the odds path. Serves the existing watchdog delivery check and the QA loop that compares app against server against WebSocket.</p>
+<p><strong>Cons.</strong> Has to reproduce five endpoints <strong>plus</strong> <code>resolveSession</code> auth, so permissions get duplicated. It has no data of its own, so it cannot be built or demoed before the input side exists. Weakest standalone demo.</p>
+<h3 id="c-both">C. Both</h3>
+<p><strong>Pros.</strong> One coherent shape. One change log serves both directions: inbound changes land in it, outbound resume reads from it. Avoids building the bus twice, and it is where the platform ends up regardless.</p>
+<p><strong>Cons.</strong> Biggest surface, two integration seams at once, largest blast radius, slowest to a demo.</p>
+<h3 id="recommendation">Recommendation</h3>
+<p><strong>Build the shared core, ship A as the first real slice, keep C as the destination.</strong> A is what the election goal needs, it needs no auth duplication, and its <code>live_price</code> plus <code>change_log</code> tables are exactly what B needs later. B then becomes a transport addition, not a rebuild.</p>
+<hr>
+<h2 id="4-cost-and-rate-limits">4. Cost and rate limits</h2>
+<h3 id="published-limits">Published limits</h3>
+<p><strong>Kalshi — free.</strong> Token-bucket budgets: Basic 200 read/s and 100 write/s; Advanced 300/300 by calling one upgrade endpoint once (needs at least 1 of the last 100 orders placed via API). The default call cost is 10 tokens, so <strong>Basic sustains roughly 20 read calls/s and Advanced 30, at no charge</strong>, with 3x burst above Basic. REST market data is anonymous. <strong>The WebSocket requires a signed handshake</strong> — measured as HTTP 401 when attempted anonymously.</p>
+<p><strong>Polymarket — free.</strong> No credentials for market data. Cloudflare IP limits per endpoint: CLOB <code>/book</code>, <code>/price</code>, <code>/midpoint</code> 1,500 per 10s; <code>/prices-history</code> 1,000 per 10s; Gamma <code>/markets</code> 300 per 10s. Public WebSocket.</p>
+<p><strong>Novig — no public pricing.</strong> Published limits: data retrieval 256/s, order placement 64/s, GraphQL 650/min, <code>get-ticks</code> 128/s. Streaming is <code>wss://api.novig.us/tape</code> with a 15-second protocol ping. It is a sports exchange, so <strong>it carries no US election markets and is out of scope for this slice.</strong></p>
+<p><strong>OpticOdds — no public pricing, sales-led.</strong> Standard 2,500 per 15s, streaming 250 per 15s, historical 10 per 15s; a maximum of 5 sportsbooks per request and 10 leagues per stream. Community-reported pricing starts around <strong>$5,000 per month per sport</strong>, unverified and not published by the vendor.</p>
+<h3 id="the-headline-on-cost">The headline on cost</h3>
+<p><strong>US election markets cost nothing in data fees.</strong> Both venues serve market data anonymously and both publish election catalogs. There is no per-sport contract, unlike adding a sport to a commercial feed. If Optic&#x27;s real number is anywhere near the community-reported figure, <strong>not needing an Optic sport add-on for elections avoids on the order of $5,000 per month</strong> — and that figure should be treated as unverified until Optic quotes it.</p>
+<h3 id="a-useful-side-finding">A useful side finding</h3>
+<p>Both venues give away <strong>free history</strong>: Kalshi <code>/series/{series}/markets/{ticker}/candlesticks</code> and <code>/historical/*</code>, Polymarket <code>/prices-history</code> and the full on-chain ledger on Polygon. A self-built price history costs storage, not a data licence.</p>
+<hr>
+<h2 id="5-live-cache-with-ttl-versus-a-straight-relay">5. Live cache with TTL versus a straight relay</h2>
+<h3 id="what-each-one-is">What each one is</h3>
+<ul><li><strong>Straight relay.</strong> Hold the upstream socket, forward every message to every</li></ul>
+<p>subscriber. Nothing is stored; the clients are the state.</p>
+<ul><li><strong>Live cache with TTL.</strong> Hold the upstream socket, write the current value</li></ul>
+<p>into a cache with a time-to-live, and publish only on real change and at most once per TTL window. Clients read the cached value and receive pushes when it moves.</p>
+<h3 id="where-the-cost-actually-is">Where the cost actually is</h3>
+<p>Not bandwidth, for elections. The measured rate is tiny. It is in three other places:</p>
+<p>1. <strong>Upstream connections and provider budget.</strong> These belong to the <strong>account, not the instance</strong>. A relay scales by adding instances, and each instance opens its own upstream and burns the same budget again. A cache with a single leader lease opens <strong>one</strong> upstream no matter how many instances run. 2. <strong>Cold start and restart.</strong> A relay has no memory, so every reconnect and every deploy re-pulls the whole board. A cache resumes from <code>change_log</code>. 3. <strong>Fanout amplification.</strong> A relay&#x27;s egress grows with *ticks × subscribers*. A TTL coalesces that to *changes × subscribers*. Elections are small either way, but the slice must not paint us into a corner for live sports later.</p>
+<h3 id="priced">Priced</h3>
+<p>At the measured <strong>0.0402 messages per token per second</strong> (one update every <strong>24.9 seconds</strong>):</p>
+<div class="table-wrap"><table><thead><tr><th>Quantity</th><th>Straight relay</th><th>Cache with a 1s TTL</th></tr></thead><tbody><tr><td>Upstream messages/s, 1,000 markets (2,000 tokens)</td><td>~80</td><td>~80</td></tr><tr><td>Upstream connections as instances grow</td><td><strong>one per instance</strong>, each burning the provider budget again</td><td><strong>one total</strong>, via a single leader lease</td></tr><tr><td>Egress at 500 clients watching everything</td><td>~40,000 msg/s</td><td>at most ~1,000 msg/s</td></tr><tr><td>After a restart or deploy</td><td>re-pulls the whole board</td><td>resumes from the change log</td></tr></tbody></table></div>
+<p>Storage stays cheap by design: <strong>no tick is logged</strong>. <code>live_price</code> is one upsert per <code>(source, selection)</code>, bounded by catalog size, and <code>change_log</code> holds only post-coalesce publishes, trimmed to a short window. Roughly 80 upserts/s batched is trivial — kaz-control already sustains 100 plays/s.</p>
+<p>Compute is the only real cost: a small always-on instance is roughly <strong>$10–20 per month</strong> on Cloud Run, or <strong>$0</strong> on a free-tier e2-micro. The skin stays scale-to-zero.</p>
+<p><strong>Verdict: build the cache with TTL, not a relay.</strong> It is cheaper at every size, it is the only shape that survives a restart, and it is the only shape that does not multiply provider load as the service scales. The relay&#x27;s one advantage — minimum latency, no write hop — does not matter for markets that move twice a minute, and can be recovered later by keeping the hot path in memory and treating the cache as the durable copy.</p>
+<hr>
+<h2 id="6-the-first-slice-us-election-markets">6. The first slice: US election markets</h2>
+<p>Why this beats replacing Optic:</p>
+<ul><li><strong>Zero data cost and no negotiation</strong>, against an Optic sport add-on at an</li></ul>
+<p>unverified ~$5,000 per month.</p>
+<ul><li><strong>Nothing to migrate.</strong> Optic stays exactly as it is for sports. The change</li></ul>
+<p>is purely additive, so there is no cutover risk and no sports regression.</p>
+<ul><li><strong>A category the incumbent does not carry.</strong> DraftKings&#x27; depth is US sports;</li></ul>
+<p>Kalshi and Polymarket&#x27;s depth is elections and politics.</p>
+<ul><li><strong>A gentle tick rate</strong>, so the first release cannot be embarrassed by</li></ul>
+<p>latency and the caching design is proven without load.</p>
+<h3 id="measured-coverage">Measured coverage</h3>
+<ul><li><strong>Kalshi:</strong> 462 US-election series inside a 1,989-series Elections category.</li></ul>
+<p>A 40-series sample held 263 open markets.</p>
+<ul><li><strong>Polymarket:</strong> 635 genuinely open US election markets. A naive sweep</li></ul>
+<p>counted 1,769 candidates; <strong>747 were resolved</strong> and had to be filtered out.</p>
+<h3 id="measured-tick-rate">Measured tick rate</h3>
+<p>61 messages in 63.3 seconds across 24 outcome tokens: <strong>0.96 messages/s overall, 0.0402 per token per second, one update every 24.9 seconds per market.</strong> Frame mix was 12 book snapshots, 6 price changes, 1 last-trade price. Live sports is orders of magnitude faster.</p>
+<h3 id="scope">Scope</h3>
+<p>Catalog from Kalshi (<code>category=Elections</code>, filtered to US series) and Polymarket (politics tags, search, and a volume-ranked sweep). Both normalised into the shape kaz-control already understands: <code>Quote.cents</code> as a 1..99 contract price, converted by the existing <code>probToAmerican(cents / 100)</code>. One new market kind for election markets, plus a mutually-exclusive-leg flag so a parlay cannot combine two outcomes of the same race. A live demo board.</p>
+<p>Out of scope: settlement, grading, anything involving real money.</p>
+<h3 id="integration-notes-found-while-measuring">Integration notes found while measuring</h3>
+<ul><li><strong>Resolved markets are returned by default.</strong> A resolved market carries a 0</li></ul>
+<p>or 1 outcome price, which is the reliable filter.</p>
+<ul><li><strong>The cents scale is not always 1 to 99.</strong> Polymarket quotes longshots below</li></ul>
+<p>a cent, so a contract price of <code>0.05</code> cents is real. A reader that clamps cents to a whole number silently drops those markets.</p>
+<ul><li><strong>Longshot American prices explode.</strong> A 0.05-cent contract is roughly</li></ul>
+<p><code>+199,900</code> in American odds. Arithmetically correct, useless on a screen, so an election UI needs a floor.</p>
+<ul><li><strong>Kalshi&#x27;s election catalog is mostly far-dated.</strong> The busiest open series in</li></ul>
+<p>the sample carried 13 markets.</p>
+<hr>
+<h2 id="7-schema-fit-against-kaz-control">7. Schema fit against kaz-control</h2>
+<p>**kaz-socket owns <code>socket.*</code> in the same Postgres**, applied by its own runner writing <code>socket.schema_migrations</code>, so kaz-control&#x27;s <code>001</code>–<code>046</code> is untouched.</p>
+<p>Two gotchas found by reading the code:</p>
+<ul><li><code>enable_tenancy(tbl)</code> in <code>server/migrations/004_tenancy.sql</code> builds its DDL</li></ul>
+<p>with <code>format(&#x27;%I&#x27;, tbl)</code>, so passing <code>socket.connections</code> would quote the whole dotted name as a single identifier and break. The <code>socket</code> schema needs its own helper mirroring the same policy shape (<code>app.tenant_id</code>, RLS, and the <code>bracco_app</code> grant).</p>
+<ul><li>kaz-control&#x27;s runner globs <code>migrations/*.sql</code> against a single</li></ul>
+<p><code>public.schema_migrations</code>. kaz-socket must not drop files there.</p>
+<h3 id="tables">Tables</h3>
+<div class="table-wrap"><table><thead><tr><th>Table</th><th>Purpose</th></tr></thead><tbody><tr><td><code>socket.schema_migrations</code></td><td>kaz-socket&#x27;s own applied-migration record</td></tr><tr><td><code>socket.instances</code></td><td>service instances, for presence and the leader lease</td></tr><tr><td><code>socket.connections</code></td><td>one row per live connection</td></tr><tr><td><code>socket.subscriptions</code></td><td>connection to room, with its filter</td></tr><tr><td><code>socket.rooms</code></td><td>room registry</td></tr><tr><td><code>socket.live_price</code></td><td><strong>the TTL cache</strong>: current value per source and selection</td></tr><tr><td><code>socket.change_log</code></td><td><strong>bounded</strong>, post-coalesce publishes, for resume</td></tr><tr><td><code>socket.deliveries</code></td><td>sent/acked, for end-to-end latency</td></tr><tr><td><code>socket.source_streams</code></td><td>inbound stream state, cursors, reconnects</td></tr><tr><td><code>socket.source_events</code></td><td>normalised inbound events, for audit and replay</td></tr><tr><td><code>socket.outbox</code></td><td><strong>the integration seam</strong> kaz-control consumes</td></tr></tbody></table></div>
+<h3 id="friction-on-the-kaz-control-side-for-the-election-shape">Friction on the kaz-control side, for the election shape</h3>
+<p>Findings, not changes to make without a decision:</p>
+<ul><li><code>events.league_id</code> is <code>NOT NULL REFERENCES leagues(id)</code>, so an election needs</li></ul>
+<p>a <code>leagues</code> row, for example <code>us-election-2028</code> with <code>sport=&#x27;politics&#x27;</code>.</p>
+<ul><li><strong>`events.away` and `events.home` are both `NOT NULL jsonb`.</strong> A yes/no</li></ul>
+<p>election market has neither. Either the candidate goes in <code>home</code> with a synthetic <code>No</code> in <code>away</code>, or those columns get relaxed. This is the main schema friction and it is a kaz-control migration, so it is a product call.</p>
+<ul><li><code>leagues.sgp_factor</code> and <code>packages/core/src/sgpRules.ts</code> assume team sports.</li></ul>
+<p>Cross-race correlation is a real modelling question and is out of scope here; the mutually-exclusive flag is the minimum needed to stop an impossible parlay.</p>
+<ul><li><code>pricing_margins.market_kind</code> is a free string, so <code>election</code> needs no schema</li></ul>
+<p>change there.</p>
+<hr>
+<h2 id="8-front-end-changes">8. Front-end changes</h2>
+<ul><li><code>app/src/data/priceSocket.ts</code> builds its URL from <code>API_URL</code>. Add</li></ul>
+<p><code>VITE_SOCKET_URL</code> with <code>API_URL</code> as the fallback, so nothing breaks when the variable is unset.</p>
+<ul><li><strong>The real fix is resume.</strong> That file reconnects with exponential backoff but</li></ul>
+<p>never tells the server where it left off, so every reconnect re-fetches the whole board. Sending <code>?since=&lt;lastSeq&gt;</code> and replaying from <code>change_log</code> is the single change that proves the cache is worth building.</p>
+<ul><li>It already sends <code>{&quot;type&quot;:&quot;ack&quot;,&quot;seq&quot;:n}</code>, so the latency instrument exists</li></ul>
+<p>and kaz-socket keeps the same contract.</p>
+<ul><li><code>admin/src/pages/Odds.tsx</code>, <code>Trading.tsx</code> and <code>Support.tsx</code> each open a raw</li></ul>
+<p><code>WebSocket</code> against the API host; same environment change.</p>
+<ul><li><code>admin/src/lib/api.ts</code> and <code>app/src/config/dataSource.ts</code> are the two places</li></ul>
+<p>the base URL is resolved.</p>
+<hr>
+<h2 id="9-the-demo">9. The demo</h2>
+<p><code>npm run demo</code> in <code>kaz-socket</code> starts the service, applies the <code>socket</code> migrations, connects the Kalshi elections source and the Polymarket socket, and serves a page showing:</p>
+<ul><li>live election ticks from both venues,</li><li>the sequence number advancing,</li><li>acknowledgement latency,</li><li>the TTL coalescing visibly suppressing ticks,</li><li>a forced disconnect followed by a resume from <code>?since=</code> with no gap.</li></ul>
+<hr>
+<h2 id="10-what-is-not-in-scope">10. What is not in scope</h2>
+<ul><li>No kaz-control edits. The adapter is documented, not written.</li><li>No change to the drever <code>pandora.danchrow.com</code> socket, per the skin plan&#x27;s</li></ul>
+<p>Phase 2 deferral.</p>
+<ul><li>No real credentials and no real-money anything, matching kaz-control&#x27;s</li></ul>
+<p>local-build rule.</p>
+<ul><li>No work on the parked Phase 1 items, which wait on the GCP account and</li></ul>
+<p><code>OPTIC_API_KEY</code>.</p>
+<footer>
+  <p>Generated 2026-10-02 01:26 UTC from <code>docs/PLAN.md</code>, which
+  is the source of this page. Every figure marked measured was taken from an
+  anonymous public endpoint.</p>
+</footer>
+</div>
+</body>
+</html>

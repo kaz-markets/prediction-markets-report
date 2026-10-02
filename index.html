@@ -71,6 +71,7 @@ p { margin: 0 0 1rem; }
   letter-spacing: -0.035em; margin: 0 0 0.4rem;
 }
 .lede { font-size: 1.1rem; color: var(--ink-dim); max-width: 76ch; }
+.hero-link { margin: 1.4rem 0 0; font-family: var(--mono); font-size: 0.9rem; }
 .meta {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(176px, 1fr));
@@ -227,9 +228,11 @@ footer { padding: 40px 0 80px; color: var(--ink-faint); font-size: 0.85rem; }
     <div><dt>Kalshi open events</dt><dd>13,878</dd></div>
     <div><dt>Polymarket open interest</dt><dd>$326,484,916</dd></div>
   </dl>
+  <p class="hero-link"><a href="docs/plan.html">Architecture plan for the feed
+  service built on this survey &rarr;</a></p>
 </header>
 </div>
-<nav class="toc"><ul><li><a href="#verdict">Verdict</a></li><li><a href="#kalshi">Kalshi</a></li><li><a href="#polymarket">Polymarket</a></li><li><a href="#live">Live probe</a></li><li><a href="#specs">Specs</a></li><li><a href="#gaps">Limits</a></li><li><a href="#relevance">Scope note</a></li><li><a href="#sources">Sources</a></li></ul></nav>
+<nav class="toc"><ul><li><a href="#verdict">Verdict</a></li><li><a href="#kalshi">Kalshi</a></li><li><a href="#polymarket">Polymarket</a></li><li><a href="#elections">Elections</a></li><li><a href="#live">Live probe</a></li><li><a href="#specs">Specs</a></li><li><a href="#gaps">Limits</a></li><li><a href="#relevance">Scope note</a></li><li><a href="#sources">Sources</a></li></ul></nav>
 <div class="wrap">
 <section id="verdict"><p class="kicker">Executive summary</p><h2>What each venue actually gives away</h2><div class="verdict">
   <div class="card">
@@ -582,6 +585,80 @@ footer { padding: 40px 0 80px; color: var(--ink-faint); font-size: 0.85rem; }
 
     <h3>Sports metadata</h3>
     <div class="table-wrap"><table class=""><thead><tr><th>Sport key</th><th>Tag ids</th></tr></thead><tbody><tr><td>ufl</td><td>1,100639,1186,105925</td></tr><tr><td>lmp</td><td>1,100639,678,105936</td></tr><tr><td>cricpakt20cup</td><td>1,100639,517,104074</td></tr><tr><td>cricps</td><td>1,100639,517,104073</td></tr><tr><td>cricpsl</td><td>1,100639,517,103805</td></tr><tr><td>cricsa20</td><td>1,100639,517,103811</td></tr><tr><td>cricsm</td><td>1,100639,517,103810</td></tr><tr><td>cricss</td><td>1,100639,517,102817</td></tr><tr><td>liiga</td><td>1,100639,100088,105937</td></tr><tr><td>hbehfcl</td><td>1,100639,102897,105926</td></tr><tr><td>hockeychl</td><td>1,100639,100088,105938</td></tr><tr><td>ncaalax</td><td>1,100639,102393,105939</td></tr></tbody></table></div>
+    </section><section id="elections"><p class="kicker">The first slice</p><h2>US election markets</h2>
+    <p class="lede">The first slice for a new feed: a category the incumbent
+    sports feed does not carry, at zero data cost on both venues, with a
+    gentle tick rate. Measured the same anonymous way as everything else in
+    this report.</p>
+
+    <h3>Coverage</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Measure</th><th>Kalshi</th><th>Polymarket</th></tr></thead><tbody><tr><td>Election series in the category</td><td>1,989</td><td>&mdash;</td></tr><tr><td>US election series</td><td>462</td><td>635 open markets</td></tr><tr><td>Open markets in a 40-series sample</td><td>263</td><td>&mdash;</td></tr><tr><td>Resolved and excluded</td><td>&mdash;</td><td>747</td></tr><tr><td>Candidates scanned</td><td>&mdash;</td><td>1,769</td></tr></tbody></table></div>
+
+    <h4>Busiest Kalshi US election series in the sample</h4>
+    <div class="table-wrap"><table class=""><thead><tr><th>Series</th><th>Open events</th><th>Open markets</th></tr></thead><tbody><tr><td><code>KXHOUSEWINSTATE</code></td><td>18</td><td>102</td></tr><tr><td><code>KXPRESNOMD</code></td><td>1</td><td>48</td></tr><tr><td><code>KXPRESOUTCOME</code></td><td>1</td><td>32</td></tr><tr><td><code>KXPRESPERSON</code></td><td>1</td><td>31</td></tr><tr><td><code>KXGOVSENDIFF</code></td><td>2</td><td>15</td></tr><tr><td><code>KXHOUSETURNOUT</code></td><td>1</td><td>9</td></tr><tr><td><code>KXSECSTATEIL</code></td><td>1</td><td>2</td></tr><tr><td><code>HOUSECA47</code></td><td>1</td><td>2</td></tr><tr><td><code>HOUSEIA3</code></td><td>1</td><td>2</td></tr><tr><td><code>GOVPARTYMN</code></td><td>1</td><td>2</td></tr></tbody></table></div>
+
+    <h4>Polymarket, top open US election markets by volume</h4>
+    <div class="table-wrap"><table class=""><thead><tr><th>Question</th><th>Cents</th><th>American</th><th>Volume</th></tr></thead><tbody><tr><td>Will LeBron James win the 2028 US Presidential Election?</td><td>0.05</td><td>+199,900</td><td>$54,884,196</td></tr><tr><td>Will Oprah Winfrey win the 2028 Democratic presidential nomination?</td><td>0.05</td><td>+199,900</td><td>$54,431,477</td></tr><tr><td>Will Bernie Sanders win the 2028 Democratic presidential nomination?</td><td>0.65</td><td>+15,285</td><td>$52,818,549</td></tr><tr><td>Will Chelsea Clinton win the 2028 Democratic presidential nomination?</td><td>0.7</td><td>+14,186</td><td>$50,607,624</td></tr><tr><td>Will Andrew Yang win the 2028 Democratic presidential nomination?</td><td>0.05</td><td>+199,900</td><td>$48,908,330</td></tr><tr><td>Will Tim Walz win the 2028 US Presidential Election?</td><td>0.05</td><td>+199,900</td><td>$44,835,788</td></tr><tr><td>Will Hunter Biden win the 2028 Democratic presidential nomination?</td><td>0.25</td><td>+39,900</td><td>$44,551,502</td></tr><tr><td>Will Byron Donalds win the 2028 Republican presidential nomination?</td><td>0.15</td><td>+66,567</td><td>$44,428,949</td></tr><tr><td>Will Hillary Clinton win the 2028 Democratic presidential nomination?</td><td>0.15</td><td>+66,567</td><td>$44,178,975</td></tr><tr><td>Will LeBron James win the 2028 Democratic presidential nomination?</td><td>0.05</td><td>+199,900</td><td>$44,145,355</td></tr></tbody></table></div>
+    
+        <h4>Worked example &mdash; <code>HOUSECA47-26-D</code></h4>
+        <p class="muted">Will Democratic win the House race for CA-47?</p>
+        <dl class="meta">
+          <div><dt>Yes bid</dt><dd>0.9310</dd></div>
+          <div><dt>As cents</dt><dd>93.1</dd></div>
+          <div><dt>As American</dt><dd>-1,349</dd></div>
+          <div><dt>Volume</dt><dd>5,049</dd></div>
+          <div><dt>Closes</dt><dd>2027-11-03</dd></div>
+          <div><dt>Book levels</dt><dd>10 yes / 8 no</dd></div>
+        </dl>
+        
+
+    <h3>Tick rate, measured on the live socket</h3>
+    <p>Sampled 24 outcome tokens across open US
+    election markets on Polymarket's public market channel for
+    60 seconds.</p>
+    <div class="table-wrap"><table class=""><thead><tr><th>Measure</th><th>Value</th></tr></thead><tbody><tr><td>Messages received</td><td>61</td></tr><tr><td>Window</td><td>63.3 seconds</td></tr><tr><td>Rate</td><td>0.964 messages/s</td></tr><tr><td>Per outcome token</td><td>0.0402 messages/s</td></tr><tr><td>Equivalent</td><td>one update every 24.9 seconds per market</td></tr><tr><td>Frame mix</td><td>book 26, price_change 34, last_trade_price 1</td></tr></tbody></table></div>
+    <p class="note">Compare with live sports, which ticks orders of magnitude
+    faster. This is why a US election slice is a safe first release: it cannot
+    be embarrassed by latency, and it exercises the caching design without
+    load.</p>
+
+    <h3>Why this makes a cache with a TTL the right shape</h3>
+    
+        <p>Using the measured <strong>0.0402 messages per token per
+        second</strong> (24.9 seconds per update):</p>
+        <div class="table-wrap"><table class=""><thead><tr><th>Quantity</th><th>Straight relay</th><th>Cache with a 1s TTL</th></tr></thead><tbody><tr><td>Upstream messages/s for 1,000 markets (2,000 tokens)</td><td>80.3</td><td>80.3</td></tr><tr><td>Upstream connections as instances grow</td><td><strong>one per instance</strong> &mdash; each burns the provider budget again</td><td><strong>one total</strong> &mdash; a single leader lease</td></tr><tr><td>Egress at 500 clients watching everything</td><td>40,160</td><td>at most 1,000</td></tr><tr><td>Behaviour after a restart or deploy</td><td>re-pulls the whole board</td><td>resumes from the change log</td></tr></tbody></table></div>
+        <p class="note">The relay's egress grows with
+        <em>ticks &times; subscribers</em>; the cache coalesces that to
+        <em>changes &times; subscribers</em>. At this tick rate both are
+        modest, but the upstream-connection column is the one that decides
+        it: provider budgets belong to the account, not the instance, so a
+        relay that scales out pays for the same data repeatedly.</p>
+        
+
+    <h3>Integration notes found while measuring</h3>
+    <ul>
+      <li><strong>Resolved markets are returned by default.</strong> A naive
+      sweep counted 1,769 candidate US election markets; only
+      635 were genuinely open. A
+      resolved market carries a 0 or 1 outcome price, which is the reliable
+      filter.</li>
+      <li><strong>The cents scale is not always 1 to 99.</strong> Polymarket
+      quotes longshots below a cent, so a contract price of
+      <code>0.05</code> cents is real. A reader that clamps cents to a whole
+      number silently drops those markets.</li>
+      <li><strong>Longshot American prices explode.</strong> A 0.05-cent
+      contract is roughly <code>+199,900</code> in American odds. The
+      conversion is arithmetically right and useless on a screen, so an
+      election UI needs a floor.</li>
+      <li><strong>Kalshi's election catalog is mostly far-dated.</strong> The
+      busiest open series carried 13 markets; the sample of 40 series held 263
+      open markets between them.</li>
+    </ul>
+
+    <h3>What this costs</h3>
+    <p>Nothing, in data fees. Both venues serve election market data
+    anonymously and both publish their election catalogs. There is no
+    per-sport contract, unlike adding a sport to a commercial feed.</p>
     </section><section id="live"><p class="kicker">Anonymous access, measured</p><h2>Live probe results</h2>
         <p class="lede">Every figure on this page came from an anonymous public
         endpoint. Nothing required a key, an account or a credential.</p>
@@ -664,7 +741,7 @@ footer { padding: 40px 0 80px; color: var(--ink-faint); font-size: 0.85rem; }
         described above. Live captures are labelled with their capture time
         and are point-in-time snapshots.</p></section>
 <footer>
-  <p>Generated 2026-10-02 00:41 UTC from captured public data. Every figure
+  <p>Generated 2026-10-02 01:26 UTC from captured public data. Every figure
   labelled <em>captured</em> is a point-in-time snapshot taken from anonymous
   endpoints and is not a live value.</p>
   <p>Prices appear in American odds alongside each venue's own probability

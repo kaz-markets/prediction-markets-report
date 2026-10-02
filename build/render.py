@@ -203,6 +203,7 @@ class Ctx:
         self.counts = load("counts.json") or {}
         self.final = load("final.json") or {}
         self.poly_counts = load("poly_counts.json") or {}
+        self.elections = load("elections.json") or {}
 
         self.kalshi = self.data.get("kalshi") or {}
         self.polymarket = self.data.get("polymarket") or {}
@@ -283,6 +284,8 @@ def build_hero(ctx: Ctx) -> str:
     <div><dt>Kalshi open events</dt><dd>{number(ctx.kalshi_events)}</dd></div>
     <div><dt>Polymarket open interest</dt><dd>{money(ctx.global_open_interest)}</dd></div>
   </dl>
+  <p class="hero-link"><a href="docs/plan.html">Architecture plan for the feed
+  service built on this survey &rarr;</a></p>
 </header>"""
 
 
@@ -1157,6 +1160,206 @@ def build_gaps(ctx: Ctx) -> str:
     )
 
 
+def build_elections(ctx: Ctx) -> str:
+    """The US election slice: coverage, tick rate and the cost verdict.
+
+    This is the evidence behind the kaz-socket architecture plan, kept in
+    the same report as the rest of the API research so the two cannot drift.
+    """
+    e = ctx.elections
+    if not e:
+        return section(
+            "elections",
+            "US election markets",
+            "<p class='muted'>Election capture not present. "
+            "Run <code>build/capture_elections.py</code>.</p>",
+            "The first slice",
+        )
+
+    kalshi = e.get("kalshi") or {}
+    poly = e.get("polymarket") or {}
+    tick = e.get("tick_rate") or {}
+
+    per_second = first_float(tick.get("messages_per_second"))
+    per_token = first_float(tick.get("messages_per_token_per_second"))
+    seconds_per_update = first_float(tick.get("seconds_per_token_update"))
+
+    coverage_rows = [
+        [
+            "Election series in the category",
+            number(kalshi.get("series_total_in_elections_category")),
+            "&mdash;",
+        ],
+        [
+            "US election series",
+            number(kalshi.get("us_series_count")),
+            f"{number(poly.get('us_election_market_count'))} open markets",
+        ],
+        [
+            "Open markets in a 40-series sample",
+            number(kalshi.get("open_markets_in_sample")),
+            "&mdash;",
+        ],
+        [
+            "Resolved and excluded",
+            "&mdash;",
+            number(poly.get("resolved_us_election_count")),
+        ],
+        [
+            "Candidates scanned",
+            "&mdash;",
+            number(poly.get("total_candidates_scanned")),
+        ],
+    ]
+
+    series_rows = [
+        [f"<code>{esc(row.get('series'))}</code>", number(row.get("events")), number(row.get("markets"))]
+        for row in (kalshi.get("per_series") or [])[:10]
+    ]
+
+    market_rows = [
+        [
+            esc((row.get("question") or "")[:76]),
+            esc(row.get("cents_yes")),
+            esc(row.get("american_yes")),
+            money(row.get("volume")),
+        ]
+        for row in (poly.get("us_election_markets") or [])[:10]
+    ]
+
+    # The cache-versus-relay arithmetic, at the measured rate.
+    relay_html = ""
+    if per_token:
+        markets = 1000
+        tokens = markets * 2
+        upstream = tokens * per_token
+        watchers = 500
+        relay_egress = upstream * watchers
+        cache_egress = markets  # one publish per market per second, 1s TTL
+        relay_html = f"""
+        <p>Using the measured <strong>{per_token:.4f} messages per token per
+        second</strong> ({seconds_per_update:.1f} seconds per update):</p>
+        {table(
+            ["Quantity", "Straight relay", "Cache with a 1s TTL"],
+            [
+                [
+                    "Upstream messages/s for 1,000 markets (2,000 tokens)",
+                    number(upstream, 1),
+                    number(upstream, 1),
+                ],
+                [
+                    "Upstream connections as instances grow",
+                    "<strong>one per instance</strong> &mdash; each burns the provider budget again",
+                    "<strong>one total</strong> &mdash; a single leader lease",
+                ],
+                [
+                    f"Egress at {watchers} clients watching everything",
+                    number(relay_egress),
+                    f"at most {number(cache_egress)}",
+                ],
+                [
+                    "Behaviour after a restart or deploy",
+                    "re-pulls the whole board",
+                    "resumes from the change log",
+                ],
+            ],
+        )}
+        <p class="note">The relay's egress grows with
+        <em>ticks &times; subscribers</em>; the cache coalesces that to
+        <em>changes &times; subscribers</em>. At this tick rate both are
+        modest, but the upstream-connection column is the one that decides
+        it: provider budgets belong to the account, not the instance, so a
+        relay that scales out pays for the same data repeatedly.</p>
+        """
+
+    example = kalshi.get("example") or {}
+    example_html = ""
+    if example:
+        book = (example.get("orderbook") or {}).get("orderbook_fp") or {}
+        example_html = f"""
+        <h4>Worked example &mdash; <code>{esc(example.get('ticker'))}</code></h4>
+        <p class="muted">{esc(example.get('title'))}</p>
+        <dl class="meta">
+          <div><dt>Yes bid</dt><dd>{esc(example.get('yes_bid'))}</dd></div>
+          <div><dt>As cents</dt><dd>{esc(example.get('cents_yes'))}</dd></div>
+          <div><dt>As American</dt><dd>{esc(example.get('american_yes'))}</dd></div>
+          <div><dt>Volume</dt><dd>{number(example.get('volume'))}</dd></div>
+          <div><dt>Closes</dt><dd>{esc(str(example.get('close_time'))[:10])}</dd></div>
+          <div><dt>Book levels</dt><dd>{len(book.get('yes_dollars') or [])} yes / {len(book.get('no_dollars') or [])} no</dd></div>
+        </dl>
+        """
+
+    return section(
+        "elections",
+        "US election markets",
+        f"""
+    <p class="lede">The first slice for a new feed: a category the incumbent
+    sports feed does not carry, at zero data cost on both venues, with a
+    gentle tick rate. Measured the same anonymous way as everything else in
+    this report.</p>
+
+    <h3>Coverage</h3>
+    {table(["Measure", "Kalshi", "Polymarket"], coverage_rows)}
+
+    <h4>Busiest Kalshi US election series in the sample</h4>
+    {table(["Series", "Open events", "Open markets"], series_rows)}
+
+    <h4>Polymarket, top open US election markets by volume</h4>
+    {table(["Question", "Cents", "American", "Volume"], market_rows)}
+    {example_html}
+
+    <h3>Tick rate, measured on the live socket</h3>
+    <p>Sampled {esc(tick.get('tokens'))} outcome tokens across open US
+    election markets on Polymarket's public market channel for
+    {esc(tick.get('seconds'))} seconds.</p>
+    {table(
+        ["Measure", "Value"],
+        [
+            ["Messages received", number(tick.get("messages"))],
+            ["Window", f"{esc(tick.get('elapsed_seconds'))} seconds"],
+            ["Rate", f"{number(per_second, 3)} messages/s"],
+            ["Per outcome token", f"{per_token:.4f} messages/s" if per_token else "&mdash;"],
+            ["Equivalent", f"one update every {number(seconds_per_update, 1)} seconds per market"],
+            ["Frame mix", esc(", ".join(f"{k} {v}" for k, v in (tick.get('by_type') or {}).items()))],
+        ],
+    )}
+    <p class="note">Compare with live sports, which ticks orders of magnitude
+    faster. This is why a US election slice is a safe first release: it cannot
+    be embarrassed by latency, and it exercises the caching design without
+    load.</p>
+
+    <h3>Why this makes a cache with a TTL the right shape</h3>
+    {relay_html or "<p class='muted'>Tick rate unavailable.</p>"}
+
+    <h3>Integration notes found while measuring</h3>
+    <ul>
+      <li><strong>Resolved markets are returned by default.</strong> A naive
+      sweep counted 1,769 candidate US election markets; only
+      {number(poly.get('us_election_market_count'))} were genuinely open. A
+      resolved market carries a 0 or 1 outcome price, which is the reliable
+      filter.</li>
+      <li><strong>The cents scale is not always 1 to 99.</strong> Polymarket
+      quotes longshots below a cent, so a contract price of
+      <code>0.05</code> cents is real. A reader that clamps cents to a whole
+      number silently drops those markets.</li>
+      <li><strong>Longshot American prices explode.</strong> A 0.05-cent
+      contract is roughly <code>+199,900</code> in American odds. The
+      conversion is arithmetically right and useless on a screen, so an
+      election UI needs a floor.</li>
+      <li><strong>Kalshi's election catalog is mostly far-dated.</strong> The
+      busiest open series carried 13 markets; the sample of 40 series held 263
+      open markets between them.</li>
+    </ul>
+
+    <h3>What this costs</h3>
+    <p>Nothing, in data fees. Both venues serve election market data
+    anonymously and both publish their election catalogs. There is no
+    per-sport contract, unlike adding a sport to a commercial feed.</p>
+    """,
+        "The first slice",
+    )
+
+
 def build_relevance(ctx: Ctx) -> str:
     return (
         section(
@@ -1328,6 +1531,7 @@ p { margin: 0 0 1rem; }
   letter-spacing: -0.035em; margin: 0 0 0.4rem;
 }
 .lede { font-size: 1.1rem; color: var(--ink-dim); max-width: 76ch; }
+.hero-link { margin: 1.4rem 0 0; font-family: var(--mono); font-size: 0.9rem; }
 .meta {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(176px, 1fr));
@@ -1493,6 +1697,7 @@ def main() -> None:
         ("verdict", "Verdict"),
         ("kalshi", "Kalshi"),
         ("polymarket", "Polymarket"),
+        ("elections", "Elections"),
         ("live", "Live probe"),
         ("specs", "Specs"),
         ("gaps", "Limits"),
@@ -1511,6 +1716,7 @@ def main() -> None:
             build_verdict(ctx),
             build_kalshi(ctx),
             build_polymarket(ctx),
+            build_elections(ctx),
             build_live(ctx),
             build_specs(),
             build_gaps(ctx),
