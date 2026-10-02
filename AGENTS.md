@@ -1,7 +1,8 @@
 # Agent rules - KAZ
 
 These rules are the organization default. Every repository in `kaz-markets` carries a copy.
-The canonical text lives here; `sync` writes the copies.
+The canonical text lives here. A copy ships in each repository, because an agent reads the
+copy that sits beside the code.
 
 ## The knowledge bundle comes first
 
@@ -127,5 +128,5 @@ Everything else in `docs/` is stable and edited in place.
 
 - `kaz-markets/.github/.github/workflows/okf.yml` - frontmatter, index parity, doc freshness.
 - `kaz-markets/.github/.github/workflows/frontend-guard.yml` - flags a front-end diff.
-- `scripts/okf.mjs` in this repository is the one implementation. `sync` writes a copy into
-  each repository so `node scripts/okf.mjs --write` works locally. Edit it here, never there.
+- `scripts/okf.mjs` in this repository is the one implementation. Each repository carries a
+  copy, so `node scripts/okf.mjs --write` works locally. Edit it here, never there.
