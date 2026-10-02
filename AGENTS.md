@@ -28,6 +28,55 @@ this and fails the PR when it is skipped.
 them unless the owner asks for it in that task. Platform, backend, service and `docs/` work
 is the work. When a front-end change looks required, stop and say so instead of making it.
 
+## Platform constraints
+
+Hard limits, not preferences. If a task cannot be done inside them, stop and say so. Do not
+work around them.
+
+### Cloud is free tier only
+
+GCP, free tier only. No always-on VM, no Cloud SQL, no Memorystore, no NAT gateway, no
+fixed-cost load balancer, no committed use, no paid SKU. Prefer scale-to-zero (Cloud Run with
+minimum instances 0) and request-billed storage. A design that needs a paid resource is a
+decision for the owner, in writing, before any code.
+
+### Data is minimised
+
+- Feed data is transient. Cache it with a TTL and bound the change log. No long-term feed
+  history, no archive, no replay store beyond the resume window.
+- No real user data. Ever. Not in a fixture, a seed, a test or a database. Demo and
+  development run on fake players.
+- No real payment data. No card number, no bank details, no processor credentials, no live
+  processor. Payments stay a mock behind an adapter.
+- Every external capability is an interface with a local mock, and the mock is the default.
+
+### Stack
+
+- Front ends: TypeScript.
+- Backends: Python microservices.
+- Existing TypeScript services are not rewritten to prove the rule. New backend work is
+  Python unless the owner says otherwise for that repository.
+
+### No third party unless asked
+
+Do not add a vendor, SDK, package, SaaS or external API unless the owner asks for it in that
+task. No new dependency for something a few lines will do. When an external capability is
+genuinely required, define the interface, ship the local mock, and stop.
+
+### Lean, and horizontally scalable
+
+- Services are stateless behind a shared store. No sticky per-process state that breaks when
+  a second instance starts.
+- Scale out, not up. Nothing assumes exactly one instance except where the code takes a lease
+  and says so.
+- Bounded memory, bounded queues, bounded logs. Nothing grows without a limit.
+
+### Demo mode: everything is gated
+
+We are in demo. New surfaces ship behind a flag, off by default. No production credentials,
+no live providers, no real traffic, no public write path. Seed data is fake. Gating is the
+rule, not the exception.
+
 ## Frontmatter
 
 Every file in `docs/` starts with these fields. Keep them true.
