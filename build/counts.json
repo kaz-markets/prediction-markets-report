@@ -1,0 +1,41 @@
+{
+  "captured_at": "2026-10-01T23:23:56Z",
+  "series": {
+    "count": 14561,
+    "complete": true
+  },
+  "open_events": {
+    "count": 13878,
+    "complete": true,
+    "categories": {
+      "Sports": 7013,
+      "Elections": 3475,
+      "Entertainment": 723,
+      "Financials": 705,
+      "Politics": 679,
+      "Economics": 581,
+      "Climate and Weather": 224,
+      "Science and Technology": 159,
+      "Crypto": 92,
+      "Companies": 81,
+      "Mentions": 75,
+      "Commodities": 44,
+      "Social": 9,
+      "Health": 6,
+      "AI": 5,
+      "World": 4,
+      "Transportation": 1,
+      "Business": 1,
+      "Uncategorised": 1
+    }
+  },
+  "open_markets": {
+    "count": 33000,
+    "complete": false,
+    "categories": {
+      "Exotics": 33000
+    },
+    "sports_markets": 0
+  },
+  "polymarket_global_open_interest": null
+}

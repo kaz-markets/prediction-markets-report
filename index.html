@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kalshi &amp; Polymarket &mdash; public data survey</title>
+<meta name="description" content="Everything Kalshi and Polymarket expose publicly: REST, WebSocket, FIX, historical archives, specs, rate limits and auth models, measured against the live APIs.">
+<meta name="color-scheme" content="dark">
+<style>
+:root {
+  --bg: #0c0f14;
+  --panel: #141922;
+  --panel-2: #1b212c;
+  --line: #262e3b;
+  --ink: #e8edf5;
+  --ink-dim: #9aa6b8;
+  --ink-faint: #6b7688;
+  --accent: #5b9dff;
+  --accent-2: #38d39f;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.08em 0.36em;
+  color: #cfe0ff;
+  word-break: break-word;
+}
+h1, h2, h3, h4, h5 { line-height: 1.25; margin: 0 0 0.5em; }
+h2 { font-size: 1.9rem; letter-spacing: -0.02em; }
+h3 { font-size: 1.22rem; margin-top: 2.2rem; letter-spacing: -0.01em; }
+h4 { font-size: 1.02rem; margin-top: 1.7rem; }
+h5 { font-size: 0.86rem; color: var(--ink-dim); text-transform: uppercase;
+     letter-spacing: 0.08em; margin-top: 0; }
+p { margin: 0 0 1rem; }
+.muted { color: var(--ink-dim); }
+.note {
+  color: var(--ink-dim);
+  font-size: 0.9rem;
+  border-left: 2px solid var(--line);
+  padding-left: 0.9rem;
+  margin: 1rem 0;
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px 96px; }
+
+.hero { padding: 84px 0 40px; border-bottom: 1px solid var(--line); }
+.eyebrow {
+  text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem;
+  color: var(--accent-2); margin: 0 0 0.6rem;
+}
+.hero h1 {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  letter-spacing: -0.035em; margin: 0 0 0.4rem;
+}
+.lede { font-size: 1.1rem; color: var(--ink-dim); max-width: 76ch; }
+.meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(176px, 1fr));
+  gap: 1px; background: var(--line); border: 1px solid var(--line);
+  border-radius: 10px; overflow: hidden; margin: 2rem 0 0;
+}
+.meta > div { background: var(--panel); padding: 14px 16px; }
+.meta dt {
+  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--ink-faint); margin-bottom: 4px;
+}
+.meta dd { margin: 0; font-family: var(--mono); font-size: 0.94rem; }
+
+nav.toc {
+  position: sticky; top: 0; z-index: 20;
+  background: rgba(12, 15, 20, 0.93);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+nav.toc ul {
+  display: flex; gap: 1.4rem; list-style: none;
+  max-width: 1180px; margin: 0 auto; padding: 13px 28px;
+  overflow-x: auto; scrollbar-width: none;
+}
+nav.toc ul::-webkit-scrollbar { display: none; }
+nav.toc a {
+  color: var(--ink-dim); font-size: 0.8rem; text-transform: uppercase;
+  letter-spacing: 0.08em; white-space: nowrap;
+}
+nav.toc a:hover { color: var(--ink); text-decoration: none; }
+
+section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+section:last-of-type { border-bottom: 0; }
+.kicker {
+  text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.7rem;
+  color: var(--accent-2); margin: 0 0 0.5rem;
+}
+
+.table-wrap {
+  overflow-x: auto; border: 1px solid var(--line); border-radius: 10px;
+  margin: 1.1rem 0 1.6rem; background: var(--panel);
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+thead th {
+  text-align: left; padding: 11px 14px; background: var(--panel-2);
+  color: var(--ink-dim); font-weight: 600; font-size: 0.71rem;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--line); white-space: nowrap;
+}
+tbody td {
+  padding: 11px 14px; border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover { background: rgba(91, 157, 255, 0.045); }
+td.num, th.num { font-family: var(--mono); white-space: nowrap; }
+
+.card {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 12px; padding: 20px 22px; margin: 0 0 1.2rem;
+}
+.card h3, .card h4 { margin-top: 0; }
+.grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.1rem; margin: 1.2rem 0;
+}
+.verdict .card { border-left: 3px solid var(--accent); }
+.two-col {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.4rem; margin: 1.2rem 0;
+}
+
+.code {
+  border: 1px solid var(--line); border-radius: 10px; background: #0a0d12;
+  margin: 0.9rem 0 1.5rem; overflow: hidden;
+}
+.code-label {
+  font-family: var(--mono); font-size: 0.71rem; color: var(--ink-faint);
+  padding: 8px 14px; border-bottom: 1px solid var(--line);
+  background: var(--panel); text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.code pre {
+  margin: 0; padding: 15px 16px; overflow-x: auto;
+  font-family: var(--mono); font-size: 0.79rem; line-height: 1.6;
+  color: #b9c9e3;
+}
+.code pre code {
+  background: none; border: 0; padding: 0; color: inherit; white-space: pre;
+}
+
+.bars { margin: 1rem 0 1.6rem; }
+.bar-row {
+  display: grid; grid-template-columns: 200px 1fr 86px; align-items: center;
+  gap: 12px; padding: 5px 0; font-size: 0.86rem;
+}
+.bar-label {
+  color: var(--ink-dim); overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bar-track { background: var(--panel-2); border-radius: 999px; height: 9px; overflow: hidden; }
+.bar-fill {
+  display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+.bar-value {
+  text-align: right; font-family: var(--mono); font-size: 0.82rem;
+  color: var(--ink-dim);
+}
+
+.chip-row { display: flex; flex-wrap: wrap; gap: 7px; margin: 1rem 0 1.6rem; }
+.chip {
+  background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 13px; font-size: 0.78rem;
+  color: var(--ink-dim); font-family: var(--mono);
+}
+
+.chart {
+  margin: 1.2rem 0 1.8rem; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 12px; padding: 14px;
+}
+.chart svg { width: 100%; height: 190px; display: block; }
+.spark-line { fill: none; stroke: var(--accent); stroke-width: 2; }
+.spark-area { fill: rgba(91, 157, 255, 0.14); }
+.spark-axis { stroke: var(--line); stroke-width: 1; }
+.spark-text { fill: var(--ink-faint); font-family: var(--mono); font-size: 10px; }
+.chart figcaption {
+  color: var(--ink-dim); font-size: 0.82rem; margin-top: 8px;
+  font-family: var(--mono);
+}
+.focus-question { font-size: 1.18rem; font-weight: 600; margin: 1rem 0 0.6rem; }
+
+footer { padding: 40px 0 80px; color: var(--ink-faint); font-size: 0.85rem; }
+@media (max-width: 700px) {
+  .wrap { padding: 0 18px 64px; }
+  nav.toc ul { padding: 13px 18px; }
+  .bar-row { grid-template-columns: 118px 1fr 62px; font-size: 0.8rem; }
+  .hero { padding-top: 56px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <p class="eyebrow">Public data survey</p>
+  <h1>Kalshi &amp; Polymarket</h1>
+  <p class="lede">Everything both prediction markets expose publicly: REST,
+  WebSocket, FIX, historical archives, published specs, rate limits, auth
+  models and on-chain data. Figures marked <em>captured</em> were pulled from
+  anonymous endpoints &mdash; no key, no account, no credential.</p>
+  <dl class="meta">
+    <div><dt>Captured</dt><dd>2026-10-01T23:17:35Z</dd></div>
+    <div><dt>Kalshi open markets</dt><dd>33,000+</dd></div>
+    <div><dt>Kalshi open events</dt><dd>13,878</dd></div>
+    <div><dt>Polymarket open interest</dt><dd>$326,484,916</dd></div>
+  </dl>
+</header>
+</div>
+<nav class="toc"><ul><li><a href="#verdict">Verdict</a></li><li><a href="#kalshi">Kalshi</a></li><li><a href="#polymarket">Polymarket</a></li><li><a href="#live">Live probe</a></li><li><a href="#specs">Specs</a></li><li><a href="#gaps">Limits</a></li><li><a href="#relevance">Scope note</a></li><li><a href="#sources">Sources</a></li></ul></nav>
+<div class="wrap">
+<section id="verdict"><p class="kicker">Executive summary</p><h2>What each venue actually gives away</h2><div class="verdict">
+  <div class="card">
+    <h3>Both publish a real public API. They differ on one thing that matters.</h3>
+    <p>Kalshi's <strong>market data is anonymous over REST</strong>, but its
+    WebSocket rejected an anonymous handshake with <code>HTTP 401</code> in
+    testing, even when asking for public market-data channels. Polymarket's
+    market and sports sockets accepted anonymous connections immediately.</p>
+    <p>The practical consequence: a read-only consumer can stream Polymarket
+    and must poll Kalshi. Both give away the order book; neither gives away
+    who is resting behind it.</p>
+  </div>
+  <div class="table-wrap"><table class=""><thead><tr><th>Property</th><th>Kalshi</th><th>Polymarket</th></tr></thead><tbody><tr><td>Market data (read)</td><td>Open, no key</td><td>Open, no key</td></tr><tr><td>Historical archive</td><td>Open for settled markets and trades</td><td>Open, plus on-chain history</td></tr><tr><td><strong>Real-time stream</strong></td><td><strong>Blocked</strong> &mdash; handshake needs a key</td><td><strong>Open</strong> &mdash; anonymous market and sports sockets</td></tr><tr><td>Trading</td><td>RSA or Ed25519 signed requests</td><td>Wallet signature, then HMAC-signed requests</td></tr><tr><td>Published spec</td><td>OpenAPI, AsyncAPI, perps specs</td><td>OpenAPI and AsyncAPI per service</td></tr><tr><td>Main constraint to design around</td><td>Every authenticated call costs tokens from a bucket</td><td>IP rate limits, and order placement is geoblocked</td></tr></tbody></table></div>
+  <h3>What is actually there right now</h3>
+  <p class="muted">Counted from anonymous calls at capture time. A trailing
+  <code>+</code> means the survey stopped before the catalog ended.</p>
+  <div class="table-wrap"><table class=""><thead><tr><th>Public catalog</th><th>Kalshi</th><th>Polymarket</th></tr></thead><tbody><tr><td>Open events</td><td>13,878</td><td>8,700+</td></tr><tr><td>Open markets</td><td>33,000+</td><td>69,700+</td></tr><tr><td>Sports share</td><td>7,013 events (50.5%)</td><td>473 sport keys</td></tr><tr><td>Catalog</td><td>14,561 series</td><td>100 tags</td></tr><tr><td>Open interest</td><td>Returned per market and per event</td><td>$326,484,916</td></tr></tbody></table></div>
+</div></section><section id="kalshi"><p class="kicker">Regulated US event-contract exchange</p><h2>Kalshi</h2>
+    <p class="lede">A CFTC-regulated US event-contract exchange. Market data
+    is anonymous over REST; the WebSocket is not. Everything below was either
+    read from the published documentation or captured live without
+    credentials.</p>
+
+    <h3>Endpoints</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Surface</th><th>Host</th><th>Note</th></tr></thead><tbody><tr><td>REST, production</td><td><code>https://external-api.kalshi.com/trade-api/v2</code></td><td>Recommended host. <code>api.elections.kalshi.com</code> still served.</td></tr><tr><td>REST, demo</td><td><code>https://external-api.demo.kalshi.co/trade-api/v2</code></td><td>Credentials are not shared with production.</td></tr><tr><td>WebSocket, production</td><td><code>wss://external-api-ws.kalshi.com/trade-api/ws/v2</code></td><td>Handshake requires an API key.</td></tr><tr><td>WebSocket, demo</td><td><code>wss://external-api-ws.demo.kalshi.co/trade-api/ws/v2</code></td><td>Same requirement.</td></tr><tr><td>Private connectivity</td><td>AWS PrivateLink</td><td>Premier tier and above; VPC peering from Prime.</td></tr></tbody></table></div>
+
+    <h3>What an anonymous caller can read</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Group</th><th>Endpoints</th></tr></thead><tbody><tr><td>Series</td><td><code>/series</code>, <code>/series/{ticker}</code></td></tr><tr><td>Events</td><td><code>/events</code>, <code>/events/{event_ticker}</code>, <code>/events/multivariate</code></td></tr><tr><td>Markets</td><td><code>/markets</code>, <code>/markets/{ticker}</code></td></tr><tr><td>Order book</td><td><code>/markets/{ticker}/orderbook</code>, multi-market variant</td></tr><tr><td>Trade tape</td><td><code>/markets/trades</code></td></tr><tr><td>Candlesticks</td><td>Per market, per event, and batch</td></tr><tr><td>Exchange state</td><td><code>/exchange/status</code>, <code>/exchange/schedule</code></td></tr><tr><td>Search</td><td><code>/search/filters_by_sport</code></td></tr><tr><td>Historical</td><td><code>/historical/*</code>, including <code>/historical/cutoff</code></td></tr><tr><td>Milestones</td><td><code>/milestones</code>, <code>/milestones/{id}</code></td></tr><tr><td>Structured targets</td><td><code>/structured_targets</code></td></tr><tr><td>Live data</td><td>Sport play-by-play, weather index, crypto and commodity series</td></tr></tbody></table></div>
+
+    <h3>What needs a key</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Group</th><th>Covers</th></tr></thead><tbody><tr><td>Portfolio</td><td>Balance, positions, fills, settlements, deposits, withdrawals</td></tr><tr><td>Orders</td><td>Create, amend, decrease, cancel, batch, queue position</td></tr><tr><td>Order groups</td><td>Rolling contract limits with auto-cancel</td></tr><tr><td>API keys</td><td>Create, generate, delete credentials</td></tr><tr><td>Account</td><td>Usage tier, limits, per-endpoint token costs</td></tr><tr><td>RFQ</td><td>Requests for quote, quotes, block trades</td></tr><tr><td>FCM</td><td>Member-level subtraders, caps, blocked categories</td></tr><tr><td>Subaccounts</td><td>Isolated balances within one account</td></tr></tbody></table></div>
+
+    <h3>REST surface by tag</h3>
+    <p class="muted">Counted from the published OpenAPI document.</p>
+    <div class="bars"><div class="bar-row"><span class="bar-label" title="portfolio">portfolio</span><span class="bar-track"><span class="bar-fill" style="width:100.0%"></span></span><span class="bar-value">18</span></div><div class="bar-row"><span class="bar-label" title="communications">communications</span><span class="bar-track"><span class="bar-fill" style="width:100.0%"></span></span><span class="bar-value">18</span></div><div class="bar-row"><span class="bar-label" title="orders">orders</span><span class="bar-track"><span class="bar-fill" style="width:61.1%"></span></span><span class="bar-value">11</span></div><div class="bar-row"><span class="bar-label" title="fcm">fcm</span><span class="bar-track"><span class="bar-fill" style="width:55.6%"></span></span><span class="bar-value">10</span></div><div class="bar-row"><span class="bar-label" title="market">market</span><span class="bar-track"><span class="bar-fill" style="width:50.0%"></span></span><span class="bar-value">9</span></div><div class="bar-row"><span class="bar-label" title="historical">historical</span><span class="bar-track"><span class="bar-fill" style="width:44.4%"></span></span><span class="bar-value">8</span></div><div class="bar-row"><span class="bar-label" title="events">events</span><span class="bar-track"><span class="bar-fill" style="width:38.9%"></span></span><span class="bar-value">7</span></div><div class="bar-row"><span class="bar-label" title="order-groups">order-groups</span><span class="bar-track"><span class="bar-fill" style="width:38.9%"></span></span><span class="bar-value">7</span></div><div class="bar-row"><span class="bar-label" title="live-data">live-data</span><span class="bar-track"><span class="bar-fill" style="width:38.9%"></span></span><span class="bar-value">7</span></div><div class="bar-row"><span class="bar-label" title="exchange">exchange</span><span class="bar-track"><span class="bar-fill" style="width:22.2%"></span></span><span class="bar-value">4</span></div><div class="bar-row"><span class="bar-label" title="api-keys">api-keys</span><span class="bar-track"><span class="bar-fill" style="width:22.2%"></span></span><span class="bar-value">4</span></div><div class="bar-row"><span class="bar-label" title="account">account</span><span class="bar-track"><span class="bar-fill" style="width:22.2%"></span></span><span class="bar-value">4</span></div><div class="bar-row"><span class="bar-label" title="multivariate">multivariate</span><span class="bar-track"><span class="bar-fill" style="width:16.7%"></span></span><span class="bar-value">3</span></div><div class="bar-row"><span class="bar-label" title="search">search</span><span class="bar-track"><span class="bar-fill" style="width:11.1%"></span></span><span class="bar-value">2</span></div><div class="bar-row"><span class="bar-label" title="structured-targets">structured-targets</span><span class="bar-track"><span class="bar-fill" style="width:11.1%"></span></span><span class="bar-value">2</span></div><div class="bar-row"><span class="bar-label" title="milestone">milestone</span><span class="bar-track"><span class="bar-fill" style="width:11.1%"></span></span><span class="bar-value">2</span></div><div class="bar-row"><span class="bar-label" title="incentive-programs">incentive-programs</span><span class="bar-track"><span class="bar-fill" style="width:5.6%"></span></span><span class="bar-value">1</span></div></div>
+
+    <h3>Authentication</h3>
+    <p>Requests are signed with an RSA-PSS or Ed25519 key pair. Sign the full
+    request path from the API root, <strong>without</strong> query parameters.
+    The host is not part of the signature, which is why the two production
+    hosts are interchangeable for a signed client.</p>
+    <div class="code"><div class="code-label">Request</div><pre><code>POST https://external-api.kalshi.com/trade-api/v2/portfolio/orders?limit=5</code></pre></div>
+    <div class="code"><div class="code-label">What gets signed</div><pre><code>/trade-api/v2/portfolio/orders</code></pre></div>
+
+    <h3>WebSocket</h3>
+    <p>One connection, many channels, subscribed by <code>market_tickers</code>.
+    The connection requires credentials before any channel becomes usable.</p>
+    <div class="table-wrap"><table class=""><thead><tr><th>Channel</th><th>What it carries</th></tr></thead><tbody><tr><td><code>ticker</code></td><td>Public market data, authenticated connection</td></tr><tr><td><code>trade</code></td><td>Public market data, authenticated connection</td></tr><tr><td><code>market_lifecycle_v2</code></td><td>Public market data, authenticated connection</td></tr><tr><td><code>multivariate</code></td><td>Public market data, authenticated connection</td></tr><tr><td><code>multivariate_market_lifecycle</code></td><td>Public market data, authenticated connection</td></tr><tr><td><code>cfbenchmarks_value</code></td><td>Public market data, authenticated connection</td></tr><tr><td><code>cfbenchmarks_value_5hz</code></td><td>Public market data, authenticated connection</td></tr><tr><td><code>pyth_value</code></td><td>Public market data, authenticated connection</td></tr><tr><td><code>orderbook_delta</code></td><td>Private, user-scoped</td></tr><tr><td><code>fill</code></td><td>Private, user-scoped</td></tr><tr><td><code>market_positions</code></td><td>Private, user-scoped</td></tr><tr><td><code>communications</code></td><td>Private, user-scoped</td></tr><tr><td><code>order_group_updates</code></td><td>Private, user-scoped</td></tr><tr><td><code>user_orders</code></td><td>Private, user-scoped</td></tr></tbody></table></div>
+    <div class="code"><div class="code-label">Subscribe frame</div><pre><code>{&quot;id&quot;: 1, &quot;cmd&quot;: &quot;subscribe&quot;, &quot;params&quot;: {&quot;channels&quot;: [&quot;ticker&quot;, &quot;trade&quot;], &quot;market_tickers&quot;: [&quot;KXBTCD-25AUG0517-T114999.99&quot;]}}</code></pre></div>
+
+    <h3>FIX</h3>
+    <p>A complete FIX session is documented beside REST and WebSocket: order
+    entry, market data, drop copy, listener sessions, settlement reports and
+    error handling. This is the surface an institutional participant would
+    use instead of REST.</p>
+
+    <h3>Perps (margin)</h3>
+    <p>A separate exchange with its own REST, WebSocket and FIX documentation,
+    its own token buckets, and 39 documented REST paths. Funding rates, mark
+    price, index price, liquidation mechanics and exit triggers are all
+    public.</p>
+
+    <h3>Historical data</h3>
+    <p>Live and historical are partitioned, and each data type has its own
+    cutoff, published at <code>/historical/cutoff</code>. Settled markets,
+    trades and completed orders move out of the live endpoints into
+    <code>/historical/*</code>. Resting orders never move.</p>
+    <div class="table-wrap"><table class=""><thead><tr><th>Field</th><th>Partitions by</th><th>Meaning</th></tr></thead><tbody><tr><td><code>market_settled_ts</code></td><td>Market settlement</td><td>Markets and candlesticks older than this are historical only</td></tr><tr><td><code>trades_created_ts</code></td><td>Trade fill time</td><td>Trades and fills older than this are historical only</td></tr><tr><td><code>orders_updated_ts</code></td><td>Cancel or execution</td><td>Completed and cancelled orders move; resting orders do not</td></tr><tr><td><code>market_positions_last_updated_ts</code></td><td>Position update</td><td>A backfill horizon, not the moment a position appears</td></tr></tbody></table></div>
+    <h4>Cutoff at capture</h4>
+    <div class="code"><pre><code>{
+  &quot;market_positions_last_updated_ts&quot;: &quot;2026-08-02T00:00:00Z&quot;,
+  &quot;market_settled_ts&quot;: &quot;2026-08-02T00:00:00Z&quot;,
+  &quot;orders_updated_ts&quot;: &quot;2026-09-17T00:00:00Z&quot;,
+  &quot;trades_created_ts&quot;: &quot;2026-08-02T00:00:00Z&quot;
+}</code></pre></div>
+    <p class="note">Two route quirks worth knowing. The live candlestick
+    endpoint is
+    <code>/series/{series_ticker}/markets/{ticker}/candlesticks</code>
+    &mdash; drop the series segment and it returns <code>404</code>, not a
+    helpful error. And a candlestick's prices are nested under
+    <code>price</code> as <code>close_dollars</code>, <code>high_dollars</code>
+    and friends, so a reader expecting a flat <code>yes_price</code> field gets
+    nothing.</p>
+
+    <h3>Rate limits</h3>
+    <p>Authenticated calls cost tokens from a Read or a Write bucket that
+    refills continuously. The default cost is 10 tokens. Batch endpoints bill
+    every item separately, and a rate-limited call returns <code>429</code>
+    with no <code>Retry-After</code> header.</p>
+    <div class="table-wrap"><table class=""><thead><tr><th>Tier</th><th>Read / sec</th><th>Write / sec</th><th>How it is earned</th></tr></thead><tbody><tr><td>Basic</td><td>200</td><td>100</td><td>Account signup</td></tr><tr><td>Advanced</td><td>300</td><td>300</td><td>Call the upgrade endpoint once</td></tr><tr><td>Expert</td><td>600</td><td>600</td><td>0.075% volume share</td></tr><tr><td>Premier</td><td>1,200</td><td>1,200</td><td>0.125% volume share</td></tr><tr><td>Paragon</td><td>2,400</td><td>2,400</td><td>0.25% volume share</td></tr><tr><td>Prime</td><td>4,800</td><td>4,800</td><td>0.50% volume share</td></tr><tr><td>Prestige</td><td>12,000</td><td>9,600</td><td>1.00% volume share</td></tr></tbody></table></div>
+    <p class="note">Above Basic, buckets hold three seconds of budget, so an
+    idle client can burst to three times its rate. Predictions and Perps are
+    metered separately, and single-order writes can be billed to a per-shard
+    bucket.</p>
+
+    <h3>Exchange sharding</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Index</th><th>Description</th><th>Exchange</th><th>Trading</th><th>Transfers</th></tr></thead><tbody><tr><td>0</td><td>Default</td><td>active</td><td>trading</td><td>yes</td></tr><tr><td>1</td><td>Combos</td><td>active</td><td>trading</td><td>yes</td></tr><tr><td>2</td><td>Crypto &amp; Commodities</td><td>active</td><td>trading</td><td>yes</td></tr><tr><td>3</td><td>Tennis, Baseball, Basketball</td><td>active</td><td>trading</td><td>yes</td></tr></tbody></table></div>
+
+    <h3>Open catalog at capture</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Measure</th><th>Value</th><th>Complete</th></tr></thead><tbody><tr><td>Series</td><td>14,561</td><td>yes</td></tr><tr><td>Open events</td><td>13,878</td><td>yes</td></tr><tr><td>Open markets</td><td>33,000</td><td>no, survey budget reached</td></tr><tr><td>Sports events</td><td>7,013</td><td>yes</td></tr></tbody></table></div>
+    <h4>Open events by category</h4>
+    <div class="bars"><div class="bar-row"><span class="bar-label" title="Sports">Sports</span><span class="bar-track"><span class="bar-fill" style="width:100.0%"></span></span><span class="bar-value">7,013</span></div><div class="bar-row"><span class="bar-label" title="Elections">Elections</span><span class="bar-track"><span class="bar-fill" style="width:49.6%"></span></span><span class="bar-value">3,475</span></div><div class="bar-row"><span class="bar-label" title="Entertainment">Entertainment</span><span class="bar-track"><span class="bar-fill" style="width:10.3%"></span></span><span class="bar-value">723</span></div><div class="bar-row"><span class="bar-label" title="Financials">Financials</span><span class="bar-track"><span class="bar-fill" style="width:10.1%"></span></span><span class="bar-value">705</span></div><div class="bar-row"><span class="bar-label" title="Politics">Politics</span><span class="bar-track"><span class="bar-fill" style="width:9.7%"></span></span><span class="bar-value">679</span></div><div class="bar-row"><span class="bar-label" title="Economics">Economics</span><span class="bar-track"><span class="bar-fill" style="width:8.3%"></span></span><span class="bar-value">581</span></div><div class="bar-row"><span class="bar-label" title="Climate and Weather">Climate and Weather</span><span class="bar-track"><span class="bar-fill" style="width:3.2%"></span></span><span class="bar-value">224</span></div><div class="bar-row"><span class="bar-label" title="Science and Technology">Science and Technology</span><span class="bar-track"><span class="bar-fill" style="width:2.3%"></span></span><span class="bar-value">159</span></div><div class="bar-row"><span class="bar-label" title="Crypto">Crypto</span><span class="bar-track"><span class="bar-fill" style="width:2.0%"></span></span><span class="bar-value">92</span></div><div class="bar-row"><span class="bar-label" title="Companies">Companies</span><span class="bar-track"><span class="bar-fill" style="width:2.0%"></span></span><span class="bar-value">81</span></div><div class="bar-row"><span class="bar-label" title="Mentions">Mentions</span><span class="bar-track"><span class="bar-fill" style="width:2.0%"></span></span><span class="bar-value">75</span></div><div class="bar-row"><span class="bar-label" title="Commodities">Commodities</span><span class="bar-track"><span class="bar-fill" style="width:2.0%"></span></span><span class="bar-value">44</span></div></div>
+
+    <h3>Sports coverage</h3>
+    <p><code>/search/filters_by_sport</code> returned 21
+    sport groups with their scopes and competitions, plus a display ordering.</p>
+    <p class="chip-row"><span class="chip">All sports</span><span class="chip">Basketball</span><span class="chip">Baseball</span><span class="chip">Tennis</span><span class="chip">Soccer</span><span class="chip">Hockey</span><span class="chip">Golf</span><span class="chip">MMA</span><span class="chip">Cricket</span><span class="chip">Football</span><span class="chip">Esports</span><span class="chip">Motorsport</span><span class="chip">Boxing</span><span class="chip">Lacrosse</span><span class="chip">Rugby</span><span class="chip">Darts</span><span class="chip">Chess</span><span class="chip">Cities</span><span class="chip">Table Tennis</span><span class="chip">Volleyball</span><span class="chip">Other</span></p>
+
+    <h3>Order book, with a real sports market</h3>
+    
+        <h4>Live order book &mdash; <code>KXNFLGAME-26OCT11MINNO-NO</code></h4>
+        <p class="muted">New Orleans wins</p>
+        <dl class="meta">
+          <div><dt>Yes bid / ask</dt><dd>0.4500 / 0.4900</dd></div>
+          <div><dt>American</dt><dd>+122 / +104</dd></div>
+          <div><dt>Volume</dt><dd>464</dd></div>
+          <div><dt>Open interest</dt><dd>464</dd></div>
+        </dl>
+        <div class="two-col">
+          <div><h5>Yes bids, best first</h5><div class="table-wrap"><table>
+            <thead><tr><th>Price</th><th>American</th><th>Size</th></tr></thead>
+            <tbody><tr><td class='num'>0.4500</td><td>+122</td><td class='num'>504</td></tr><tr><td class='num'>0.4400</td><td>+127</td><td class='num'>10,016</td></tr><tr><td class='num'>0.4300</td><td>+133</td><td class='num'>6,030</td></tr><tr><td class='num'>0.4100</td><td>+144</td><td class='num'>3</td></tr><tr><td class='num'>0.4000</td><td>+150</td><td class='num'>4</td></tr><tr><td class='num'>0.3900</td><td>+156</td><td class='num'>5</td></tr><tr><td class='num'>0.3800</td><td>+163</td><td class='num'>6</td></tr><tr><td class='num'>0.3700</td><td>+170</td><td class='num'>6</td></tr></tbody></table></div></div>
+          <div><h5>No bids, best first</h5><div class="table-wrap"><table>
+            <thead><tr><th>Price</th><th>American</th><th>Size</th></tr></thead>
+            <tbody><tr><td class='num'>0.5100</td><td>-104</td><td class='num'>13,099</td></tr><tr><td class='num'>0.5000</td><td>-100</td><td class='num'>406</td></tr><tr><td class='num'>0.4900</td><td>+104</td><td class='num'>4</td></tr><tr><td class='num'>0.4800</td><td>+108</td><td class='num'>129</td></tr><tr><td class='num'>0.4700</td><td>+113</td><td class='num'>4</td></tr><tr><td class='num'>0.4600</td><td>+117</td><td class='num'>6</td></tr><tr><td class='num'>0.4500</td><td>+122</td><td class='num'>155</td></tr><tr><td class='num'>0.4400</td><td>+127</td><td class='num'>6</td></tr></tbody></table></div></div>
+        </div>
+        <p class="note">Bids only, and the API returns them ascending, so the
+        best price is the last row of raw output and the first row here. A yes
+        bid at <em>x</em> is a no ask at
+        <em>1&nbsp;&minus;&nbsp;x</em>, so the two columns fully describe the
+        book. The best yes bid of 0.4500 implies a no ask at
+        0.55, which is what
+        the no side shows.</p>
+        
+    <h4>Price history, hourly close</h4><figure class="chart">
+<svg viewBox="0 0 760 170" preserveAspectRatio="none" role="img"
+     aria-label="Price history">
+  <polygon points="20,150 20.0,150.0 36.0,150.0 52.0,150.0 164.0,20.0 212.0,150.0 228.0,150.0 260.0,117.5 308.0,150.0 340.0,117.5 356.0,20.0 404.0,85.0 436.0,85.0 452.0,52.5 596.0,117.5 612.0,117.5 660.0,85.0 740.0,85.0 740,150" class="spark-area"></polygon>
+  <polyline points="20.0,150.0 36.0,150.0 52.0,150.0 164.0,20.0 212.0,150.0 228.0,150.0 260.0,117.5 308.0,150.0 340.0,117.5 356.0,20.0 404.0,85.0 436.0,85.0 452.0,52.5 596.0,117.5 612.0,117.5 660.0,85.0 740.0,85.0" class="spark-line"></polyline>
+  <line x1="20" y1="150" x2="740" y2="150"
+        class="spark-axis"></line>
+  <text x="20" y="14" class="spark-text">high 50.0%</text>
+  <text x="20" y="164" class="spark-text">low 46.0%</text>
+</svg>
+<figcaption>17 hourly candles from &lt;code&gt;/series/{series_ticker}/markets/{ticker}/candlesticks&lt;/code&gt;&amp;nbsp;&amp;mdash; the series segment is required</figcaption>
+</figure>
+
+    <h3>Fees</h3>
+    <p>Fees are published per series with per-event overrides
+    (<code>/series/{ticker}/fee_changes</code>,
+    <code>/events/{event_ticker}/fee_changes</code>) and a documented rounding
+    rule. Perps fees are a separate schedule again.</p>
+    </section><section id="polymarket"><p class="kicker">On-chain prediction market</p><h2>Polymarket</h2>
+    <p class="lede">The larger of the two and the more permissive for a data
+    consumer. Discovery, pricing, analytics and live scores are all anonymous.
+    Only order placement needs credentials, and that is geoblocked. There is a
+    separate US documentation set at <code>docs.polymarket.us</code>.</p>
+
+    <h3>Endpoints</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Service</th><th>Host</th><th>Covers</th></tr></thead><tbody><tr><td>Gamma</td><td><code>https://gamma-api.polymarket.com</code></td><td>Discovery: events, markets, tags, series, comments, search, sports</td></tr><tr><td>CLOB</td><td><code>https://clob.polymarket.com</code></td><td>Prices, order books, history, order placement</td></tr><tr><td>Data</td><td><code>https://data-api.polymarket.com</code></td><td>Positions, activity, trades, open interest, leaderboards</td></tr><tr><td>Relayer</td><td><code>https://relayer-v2.polymarket.com</code></td><td>Submit wallet transactions without holding gas</td></tr><tr><td>Bridge</td><td><code>https://bridge.polymarket.com</code></td><td>Deposit and withdraw across chains</td></tr><tr><td>Market socket</td><td><code>wss://ws-subscriptions-clob.polymarket.com/ws/market</code></td><td>Public order book, price, lifecycle</td></tr><tr><td>User socket</td><td><code>wss://ws-subscriptions-clob.polymarket.com/ws/user</code></td><td>Authenticated order and trade updates</td></tr><tr><td>Live data</td><td><code>wss://ws-live-data.polymarket.com</code></td><td>Reference prices, comments, trade activity</td></tr><tr><td>Sports socket</td><td><code>wss://sports-api.polymarket.com/ws</code></td><td>Public live scores, no subscription needed</td></tr></tbody></table></div>
+
+    <h3>Gamma &mdash; discovery and metadata</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Group</th><th>Endpoints</th></tr></thead><tbody><tr><td>Events</td><td>List, keyset list, by id, by slug, tags</td></tr><tr><td>Markets</td><td>List, keyset list, by id, by slug, by token, simplified, sampling</td></tr><tr><td>Reference</td><td>Tags, related tags, series, sports metadata, valid market types, teams</td></tr><tr><td>Discovery</td><td>Public search across markets, events and profiles; comments; profiles</td></tr></tbody></table></div>
+    <p class="note">Gamma offers two pagination styles. <strong>Offset</strong>
+    (<code>limit</code> and <code>offset</code>) works for shallow paging but
+    caps out in practice &mdash; a survey walk stopped at 2,100 events and 500
+    markets. <strong>Keyset</strong>
+    (<code>/events/keyset</code>, <code>/markets/keyset</code>) returns a
+    <code>next_cursor</code> and enumerates fully. Use keyset for anything
+    that must be complete; the documentation says the same and rejects
+    <code>offset</code> on those routes.</p>
+
+    <h3>CLOB &mdash; pricing and trading</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Endpoint</th><th>Returns</th></tr></thead><tbody><tr><td><code>/book</code>, <code>/books</code></td><td>Order book, one or many tokens</td></tr><tr><td><code>/price</code>, <code>/prices</code></td><td>Best bid or ask</td></tr><tr><td><code>/midpoint</code>, <code>/midpoints</code></td><td>Mid price</td></tr><tr><td><code>/spread</code>, <code>/spreads</code></td><td>Bid-ask spread</td></tr><tr><td><code>/last-trade-price</code></td><td>Last traded price and side</td></tr><tr><td><code>/prices-history</code></td><td>Historical series, batched</td></tr><tr><td><code>/tick-size</code>, <code>/fee-rate</code></td><td>Market constraints</td></tr><tr><td><code>/markets/{condition_id}</code></td><td>Every CLOB parameter in one call</td></tr><tr><td><code>/time</code>, <code>/ok</code></td><td>Server time and health</td></tr></tbody></table></div>
+
+    <h3>Data API &mdash; activity and analytics</h3>
+    <p>Version 2 is a rewrite with a shared <code>{data, pagination}</code>
+    envelope and cursor pagination. Version 1 routes still work. The filters
+    are literal: passing <code>market</code> where the API wants
+    <code>condition_id</code> returns a 400 that names the correct parameter,
+    which is how this survey found it.</p>
+    <div class="table-wrap"><table class=""><thead><tr><th>Endpoint</th><th>Returns</th></tr></thead><tbody><tr><td><code>/v2/positions</code></td><td>Open, closed and market-scoped positions</td></tr><tr><td><code>/v2/activity</code></td><td>Trades, splits, merges, redeems</td></tr><tr><td><code>/v2/trades</code></td><td>Market trade tape</td></tr><tr><td><code>/v2/oi</code></td><td>Open interest, global or per condition</td></tr><tr><td><code>/v2/holders</code></td><td>Top holders per market</td></tr><tr><td><code>/v2/leaderboard</code></td><td>Ranked realized PnL</td></tr><tr><td><code>/v2/user-pnl</code>, <code>/v2/user-stats</code>, <code>/v2/user-volume</code></td><td>Per-wallet performance</td></tr><tr><td><code>/v2/biggest-winners</code></td><td>Largest single winning positions</td></tr><tr><td><code>/v2/builders/*</code></td><td>Builder volume leaderboard and time series</td></tr><tr><td><code>/v2/resolutions</code></td><td>Resolution state</td></tr><tr><td><code>/v2/positions/combos</code>, <code>/v2/activity/combos</code></td><td>Multi-leg positions</td></tr><tr><td><code>/v2/approvals</code>, <code>/v2/value</code></td><td>Wallet approvals, portfolio value</td></tr></tbody></table></div>
+
+    <h3>Authentication</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Layer</th><th>Mechanism</th><th>Purpose</th></tr></thead><tbody><tr><td>L1</td><td>The wallet signs an EIP-712 <code>ClobAuth</code> message</td><td>Proves control of the address, creates or derives credentials</td></tr><tr><td>L2</td><td>API credentials sign the request with HMAC-SHA256</td><td>Authenticates private CLOB calls</td></tr></tbody></table></div>
+    <div class="table-wrap"><table class=""><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td><code>POLY_ADDRESS</code></td><td>Polygon signer address</td></tr><tr><td><code>POLY_SIGNATURE</code></td><td>L2 HMAC-SHA256 signature</td></tr><tr><td><code>POLY_TIMESTAMP</code></td><td>Unix seconds used in the signature</td></tr><tr><td><code>POLY_API_KEY</code></td><td>Credential identifier</td></tr><tr><td><code>POLY_PASSPHRASE</code></td><td>Credential passphrase</td></tr></tbody></table></div>
+    <div class="code"><div class="code-label">L2 signing</div><pre><code>message = timestamp + METHOD + path\nsignature = urlsafeBase64WithPadding(HMAC-SHA256(base64Decode(api_secret), message))</code></pre></div>
+
+    <h3>WebSocket</h3>
+    <p>The market channel is public and subscribes by outcome token id. The
+    sports channel needs no subscription at all &mdash; connect and read.</p>
+    <div class="code"><div class="code-label">Market channel subscribe</div><pre><code>{&quot;assets_ids&quot;: [&quot;&lt;token_id&gt;&quot;], &quot;type&quot;: &quot;market&quot;}</code></pre></div>
+    <h4>Market channel, captured live</h4>
+    <p class="muted">2 frames in the capture
+    window. First frame, an order book snapshot:</p>
+    <div class="code"><div class="code-label">book</div><pre><code>{
+  &quot;market&quot;: &quot;0x7d0aaf81bbd3fd73b6a1651cce08a452c0cbf9c0cbb4520ce0f981065b639d88&quot;,
+  &quot;asset_id&quot;: &quot;27146956652877944551877724690365745048289675287536243265951843487691050802191&quot;,
+  &quot;timestamp&quot;: &quot;1790896911035&quot;,
+  &quot;hash&quot;: &quot;086d8bb742374a6d9b7b2ccde71b5bee9434e78a&quot;,
+  &quot;bids&quot;: [],
+  &quot;asks&quot;: [
+    {
+      &quot;price&quot;: &quot;0.999&quot;,
+      &quot;size&quot;: &quot;236.51&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.998&quot;,
+      &quot;size&quot;: &quot;146.56&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.96&quot;,
+      &quot;size&quot;: &quot;2500&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.959&quot;,
+      &quot;size&quot;: &quot;9.03&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.9&quot;,
+      &quot;size&quot;: &quot;6&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.888&quot;,
+      &quot;size&quot;: &quot;500&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.886&quot;,
+      &quot;size&quot;: &quot;17&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.885&quot;,
+      &quot;size&quot;: &quot;9.19&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.599&quot;,
+      &quot;size&quot;: &quot;500&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.491&quot;,
+      &quot;size&quot;: &quot;5.04&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.49&quot;,
+      &quot;size&quot;: &quot;5.02&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.388&quot;,
+      &quot;size&quot;: &quot;250&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.387&quot;,
+      &quot;size&quot;: &quot;500&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.288&quot;,
+      &quot;size&quot;: &quot;250&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.287&quot;,
+      &quot;size&quot;: &quot;500&quot;
+    },
+    {
+      &quot;price&quot;: &quot;0.179&quot;,
+      &quot;size&quot;: &quot;500&quot;
+
+  ...</code></pre></div>
+    <h4>Sports channel, captured live</h4>
+    <p class="muted">13 frames in the capture
+    window, carrying live match state with no subscription.</p>
+    <div class="code"><div class="code-label">sports update</div><pre><code>{
+  &quot;metadataGameId&quot;: &quot;id2704412374825744&quot;,
+  &quot;leagueAbbreviation&quot;: &quot;cricket&quot;,
+  &quot;score&quot;: &quot;1-0&quot;,
+  &quot;period&quot;: &quot;FT&quot;,
+  &quot;live&quot;: false,
+  &quot;ended&quot;: true,
+  &quot;finishedTimestamp&quot;: &quot;2026-10-01T23:22:20.117620817Z&quot;
+}</code></pre></div>
+
+    <h3>On-chain data</h3>
+    <p>Every trade settles on Polygon, so the full history is reconstructible
+    independently of the API. Polymarket points at Goldsky for streaming
+    pipelines and Dune, Allium and CryptoHouse for SQL. Contract addresses and
+    audits are published.</p>
+
+    <h3>Rate limits</h3>
+    <p>IP-based, enforced by Cloudflare. Over-limit requests are throttled
+    rather than rejected, and windows slide. Trading endpoints additionally
+    apply per-signer token buckets.</p>
+    <div class="table-wrap"><table class=""><thead><tr><th>Service</th><th>Endpoint</th><th>Limit</th></tr></thead><tbody><tr><td>Gamma</td><td>General</td><td>4,000 req / 10s</td></tr><tr><td>Gamma</td><td><code>/events</code></td><td>500 req / 10s</td></tr><tr><td>Gamma</td><td><code>/markets</code></td><td>300 req / 10s</td></tr><tr><td>CLOB</td><td>General</td><td>9,000 req / 10s</td></tr><tr><td>CLOB</td><td><code>/book</code>, <code>/price</code>, <code>/midpoint</code></td><td>1,500 req / 10s</td></tr><tr><td>CLOB</td><td><code>/prices-history</code></td><td>1,000 req / 10s</td></tr><tr><td>CLOB</td><td><code>POST /order</code></td><td>5,000 req / 10s burst, 120,000 / 10 min sustained</td></tr><tr><td>Data v2</td><td>General</td><td>800 req / 10s</td></tr><tr><td>Data v2</td><td><code>/v2/trades</code></td><td>300 req / 10s</td></tr><tr><td>Data v2</td><td><code>/v2/positions</code></td><td>200 req / 10s</td></tr><tr><td>Bridge</td><td>General</td><td>50 req / 10s</td></tr><tr><td>Relayer</td><td><code>/submit</code></td><td>25 req / 1 min</td></tr></tbody></table></div>
+
+    <h3>REST surface</h3>
+    <p class="muted">Documented paths per service, counted from the published
+    specs.</p>
+    <div class="bars"><div class="bar-row"><span class="bar-label" title="CLOB">CLOB</span><span class="bar-track"><span class="bar-fill" style="width:100.0%"></span></span><span class="bar-value">54</span></div><div class="bar-row"><span class="bar-label" title="Gamma">Gamma</span><span class="bar-track"><span class="bar-fill" style="width:77.8%"></span></span><span class="bar-value">42</span></div><div class="bar-row"><span class="bar-label" title="Data v2">Data v2</span><span class="bar-track"><span class="bar-fill" style="width:37.0%"></span></span><span class="bar-value">20</span></div><div class="bar-row"><span class="bar-label" title="Data v1">Data v1</span><span class="bar-track"><span class="bar-fill" style="width:35.2%"></span></span><span class="bar-value">19</span></div></div>
+
+    <h3>Programs that pay participants</h3>
+    <p class="muted">Taker rebates, maker rebates, liquidity rewards and a
+    referral program are all documented, with a separate builder program for
+    applications that route orders.</p>
+
+    <h3>Wallets, keys and positioning</h3>
+    <p>Session keys authorize a separate signer for scoped, time-limited
+    trading. The Relayer submits supported transactions so a wallet does not
+    need POL for gas. Combos add a request-for-quote flow for multi-leg
+    positions, with its own authenticated quoter socket.</p>
+
+    <h3>Catalog at capture</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Measure</th><th>Value</th></tr></thead><tbody><tr><td>Sports with metadata</td><td>473</td></tr><tr><td>Tags</td><td>100</td></tr><tr><td>Gamma open events</td><td>8,700+</td></tr><tr><td>Gamma open markets</td><td>69,700+</td></tr><tr><td>Global open interest</td><td>$326,484,916</td></tr></tbody></table></div>
+    <h4>Tags seen</h4>
+    <p class="chip-row"><span class="chip">product marekt fit</span><span class="chip">caitlin clark</span><span class="chip">virgins</span><span class="chip">Viktoria Plzen</span><span class="chip">Jerry After Dark</span><span class="chip">Wildfire</span><span class="chip">House Races</span><span class="chip">redbull</span><span class="chip">keith gill</span><span class="chip">haniyeh</span><span class="chip">bat</span><span class="chip">Europa League</span><span class="chip">FDIC</span><span class="chip">legal cases</span><span class="chip">federal government</span><span class="chip">Timothée Chalamet</span><span class="chip">controversies</span><span class="chip">Major League Cricket</span><span class="chip">popularity</span><span class="chip">michelle obama</span></p>
+
+    <h3>Worked example &mdash; a live two-sided market</h3>
+    <p class="focus-question">Steelers vs. Browns</p>
+    <p class="chip-row"><span class='chip'>Steelers 0.585 &rarr; -141</span> <span class='chip'>Browns 0.415 &rarr; +141</span></p>
+    <dl class="meta">
+      <div><dt>Volume</dt><dd>$831,002</dd></div>
+      <div><dt>Liquidity</dt><dd>$5,435,363</dd></div>
+      <div><dt>Open interest</dt><dd>$808,681</dd></div>
+      <div><dt>Tick size</dt><dd>0.01</dd></div>
+      <div><dt>Closes</dt><dd>2026-10-02</dd></div>
+      <div><dt>Minimum order</dt><dd>5</dd></div>
+    </dl>
+    <div class="table-wrap"><table class=""><thead><tr><th>Outcome</th><th>Best buy</th><th>Best sell</th><th>Midpoint</th><th>Spread</th><th>Bid / ask levels</th></tr></thead><tbody><tr><td>First outcome</td><td>0.58</td><td>0.59</td><td>0.585</td><td>0.01</td><td>30 / 26</td></tr><tr><td>Second outcome</td><td>0.41</td><td>0.42</td><td>0.415</td><td>0.01</td><td>26 / 30</td></tr></tbody></table></div>
+    <div class="two-col">
+      <div><h4>Bids</h4><div class='table-wrap'><table><thead><tr><th>Price</th><th>American</th><th>Size</th></tr></thead><tbody><tr><td class='num'>0.01</td><td>+9,900</td><td class='num'>146,111.0</td></tr><tr><td class='num'>0.02</td><td>+4,900</td><td class='num'>41,506.0</td></tr><tr><td class='num'>0.03</td><td>+3,233</td><td class='num'>8,000.0</td></tr><tr><td class='num'>0.04</td><td>+2,400</td><td class='num'>69,331.0</td></tr><tr><td class='num'>0.05</td><td>+1,900</td><td class='num'>5,000.0</td></tr><tr><td class='num'>0.07</td><td>+1,329</td><td class='num'>23,285.7</td></tr><tr><td class='num'>0.1</td><td>+900</td><td class='num'>35,840.0</td></tr><tr><td class='num'>0.12</td><td>+733</td><td class='num'>20,541.6</td></tr></tbody></table></div></div>
+      <div><h4>Asks</h4><div class='table-wrap'><table><thead><tr><th>Price</th><th>American</th><th>Size</th></tr></thead><tbody><tr><td class='num'>0.99</td><td>-9,900</td><td class='num'>134,011.0</td></tr><tr><td class='num'>0.98</td><td>-4,900</td><td class='num'>43,006.0</td></tr><tr><td class='num'>0.97</td><td>-3,233</td><td class='num'>8,000.0</td></tr><tr><td class='num'>0.96</td><td>-2,400</td><td class='num'>54,581.0</td></tr><tr><td class='num'>0.93</td><td>-1,329</td><td class='num'>14,000.0</td></tr><tr><td class='num'>0.9</td><td>-900</td><td class='num'>18,050.0</td></tr><tr><td class='num'>0.88</td><td>-733</td><td class='num'>71,283.3</td></tr><tr><td class='num'>0.85</td><td>-567</td><td class='num'>4,800.0</td></tr></tbody></table></div></div>
+    </div>
+    <h4>Price history</h4>
+    <figure class="chart">
+<svg viewBox="0 0 760 170" preserveAspectRatio="none" role="img"
+     aria-label="Price history">
+  <polygon points="20,150 20.0,82.8 21.8,82.8 23.6,82.8 25.4,82.8 27.2,82.8 29.0,82.8 30.8,82.8 32.6,82.8 34.4,82.8 36.2,78.3 38.0,73.8 39.9,73.8 41.7,78.3 43.5,69.3 45.3,69.3 47.1,69.3 48.9,69.3 50.7,78.3 52.5,78.3 54.3,73.8 56.1,73.8 57.9,82.8 59.7,64.8 61.5,73.8 63.3,73.8 65.1,82.8 66.9,64.8 68.7,78.3 70.5,91.7 72.3,69.3 74.1,82.8 75.9,55.9 77.7,73.8 79.5,29.0 79.6,29.0 81.4,46.9 83.2,55.9 85.0,42.4 86.8,73.8 88.6,82.8 90.4,82.8 92.2,82.8 94.0,78.3 95.8,69.3 97.6,69.3 99.4,82.8 101.2,82.8 103.0,82.8 104.8,91.7 106.6,73.8 108.4,100.7 110.2,100.7 112.0,100.7 113.8,100.7 115.6,82.8 117.4,82.8 119.2,87.2 121.1,82.8 122.9,87.2 124.7,87.2 126.5,87.2 128.3,82.8 130.1,87.2 131.9,87.2 133.7,87.2 135.5,87.2 137.3,82.8 139.1,82.8 140.9,82.8 142.7,73.8 144.5,78.3 146.3,78.3 148.1,78.3 149.9,78.3 151.7,78.3 153.5,82.8 155.3,82.8 157.1,82.8 158.9,82.8 160.8,82.8 162.6,82.8 164.4,82.8 166.2,82.8 168.0,82.8 169.8,82.8 171.6,78.3 173.4,82.8 175.2,82.8 177.0,82.8 178.8,82.8 180.6,78.3 182.4,91.7 184.2,91.7 186.0,87.2 187.8,82.8 189.6,82.8 191.4,82.8 193.2,82.8 195.0,82.8 196.8,82.8 198.6,82.8 200.4,82.8 202.3,82.8 204.1,82.8 205.9,82.8 207.7,82.8 209.5,82.8 211.3,82.8 213.1,82.8 214.9,82.8 216.7,82.8 218.5,82.8 220.3,82.8 222.1,69.3 223.9,69.3 225.7,82.8 227.5,82.8 229.3,78.3 231.1,78.3 232.9,87.2 234.7,87.2 236.5,87.2 238.4,87.2 240.2,91.7 242.0,91.7 243.8,91.7 245.6,100.7 247.4,87.2 249.2,100.7 251.0,100.7 252.8,100.7 254.6,100.7 256.4,100.7 258.2,100.7 260.0,100.7 261.8,100.7 263.6,100.7 265.4,100.7 267.2,100.7 269.0,96.2 270.8,100.7 272.6,100.7 274.4,100.7 276.2,100.7 278.1,100.7 279.8,100.7 281.7,100.7 283.5,100.7 285.3,100.7 287.1,100.7 288.9,96.2 290.7,96.2 292.5,100.7 294.3,100.7 296.1,100.7 297.9,96.2 299.7,96.2 301.5,96.2 303.3,96.2 305.1,96.2 306.9,96.2 308.7,96.2 310.5,96.2 312.3,96.2 314.1,96.2 315.9,96.2 317.7,96.2 319.5,96.2 321.4,96.2 323.2,96.2 325.0,96.2 326.8,96.2 328.6,96.2 332.2,96.2 334.0,96.2 335.8,96.2 337.6,100.7 339.4,100.7 341.2,100.7 343.0,100.7 344.8,100.7 346.6,100.7 348.4,100.7 350.2,100.7 352.0,100.7 353.8,96.2 355.6,100.7 357.5,96.2 359.3,100.7 361.1,100.7 362.9,96.2 364.7,96.2 366.5,100.7 368.3,96.2 370.1,96.2 371.9,96.2 373.7,96.2 375.5,96.2 377.3,96.2 379.1,96.2 380.9,96.2 382.7,96.2 384.5,96.2 386.3,96.2 388.1,96.2 389.9,96.2 391.7,96.2 393.5,96.2 395.3,96.2 397.1,96.2 399.0,96.2 400.8,96.2 402.6,96.2 404.4,100.7 406.2,100.7 408.0,100.7 409.8,100.7 411.6,96.2 413.4,100.7 415.2,100.7 417.0,100.7 418.8,100.7 420.6,100.7 422.4,100.7 424.2,96.2 426.0,96.2 427.8,96.2 429.6,96.2 431.4,96.2 433.2,96.2 435.0,96.2 436.8,96.2 438.6,96.2 440.5,96.2 442.3,96.2 444.1,96.2 445.9,96.2 447.7,96.2 449.5,96.2 451.3,96.2 453.1,96.2 454.9,96.2 456.7,96.2 458.5,96.2 460.3,96.2 462.1,96.2 463.9,96.2 465.7,96.2 467.5,91.7 469.3,91.7 471.1,91.7 472.9,91.7 474.7,91.7 476.5,96.2 478.3,91.7 480.2,91.7 482.0,91.7 483.8,91.7 485.6,91.7 487.4,91.7 489.2,91.7 491.0,91.7 492.8,91.7 494.6,91.7 496.4,91.7 498.2,91.7 500.0,91.7 501.8,91.7 503.6,91.7 505.4,91.7 507.2,91.7 509.0,91.7 510.8,91.7 512.6,91.7 514.4,91.7 516.2,91.7 518.0,91.7 519.8,91.7 521.7,91.7 523.5,91.7 525.3,91.7 527.1,100.7 528.9,96.2 530.7,96.2 532.5,96.2 534.3,96.2 536.1,96.2 537.9,96.2 539.7,96.2 541.5,96.2 543.3,96.2 545.1,96.2 546.9,96.2 548.7,96.2 550.5,96.2 552.3,96.2 554.1,96.2 555.9,96.2 557.7,96.2 559.5,96.2 561.4,96.2 563.2,96.2 565.0,96.2 566.8,96.2 568.6,96.2 570.4,96.2 572.2,96.2 574.0,96.2 575.8,96.2 577.6,96.2 579.4,96.2 581.2,96.2 583.0,96.2 584.8,96.2 586.6,96.2 588.4,96.2 590.2,96.2 592.0,96.2 593.8,96.2 595.6,96.2 597.4,96.2 599.2,96.2 601.0,96.2 602.9,96.2 604.7,96.2 606.5,96.2 608.3,96.2 610.1,96.2 611.9,96.2 613.7,96.2 615.5,96.2 617.3,96.2 619.1,96.2 620.9,96.2 622.7,96.2 624.5,96.2 626.3,96.2 628.1,96.2 629.9,96.2 631.7,96.2 633.5,96.2 635.3,96.2 637.1,96.2 638.9,96.2 640.8,96.2 642.6,96.2 644.4,96.2 646.2,96.2 648.0,96.2 649.8,96.2 651.6,96.2 653.4,96.2 655.2,96.2 657.0,96.2 658.8,96.2 660.6,96.2 662.4,96.2 664.2,96.2 666.0,96.2 667.8,96.2 669.6,96.2 671.4,96.2 673.2,96.2 675.0,96.2 676.8,96.2 678.6,96.2 680.4,96.2 682.3,96.2 684.1,96.2 685.9,96.2 687.7,96.2 689.5,96.2 691.3,96.2 693.1,96.2 694.9,96.2 696.7,96.2 698.5,96.2 700.3,96.2 702.1,96.2 703.9,96.2 705.7,96.2 707.5,96.2 709.3,96.2 711.1,96.2 712.9,96.2 714.7,96.2 716.5,96.2 718.3,96.2 720.1,20.0 722.0,20.0 723.8,96.2 725.6,127.6 727.4,150.0 729.2,109.7 731.0,105.2 732.8,105.2 734.6,105.2 736.4,105.2 738.2,105.2 740.0,96.2 740,150" class="spark-area"></polygon>
+  <polyline points="20.0,82.8 21.8,82.8 23.6,82.8 25.4,82.8 27.2,82.8 29.0,82.8 30.8,82.8 32.6,82.8 34.4,82.8 36.2,78.3 38.0,73.8 39.9,73.8 41.7,78.3 43.5,69.3 45.3,69.3 47.1,69.3 48.9,69.3 50.7,78.3 52.5,78.3 54.3,73.8 56.1,73.8 57.9,82.8 59.7,64.8 61.5,73.8 63.3,73.8 65.1,82.8 66.9,64.8 68.7,78.3 70.5,91.7 72.3,69.3 74.1,82.8 75.9,55.9 77.7,73.8 79.5,29.0 79.6,29.0 81.4,46.9 83.2,55.9 85.0,42.4 86.8,73.8 88.6,82.8 90.4,82.8 92.2,82.8 94.0,78.3 95.8,69.3 97.6,69.3 99.4,82.8 101.2,82.8 103.0,82.8 104.8,91.7 106.6,73.8 108.4,100.7 110.2,100.7 112.0,100.7 113.8,100.7 115.6,82.8 117.4,82.8 119.2,87.2 121.1,82.8 122.9,87.2 124.7,87.2 126.5,87.2 128.3,82.8 130.1,87.2 131.9,87.2 133.7,87.2 135.5,87.2 137.3,82.8 139.1,82.8 140.9,82.8 142.7,73.8 144.5,78.3 146.3,78.3 148.1,78.3 149.9,78.3 151.7,78.3 153.5,82.8 155.3,82.8 157.1,82.8 158.9,82.8 160.8,82.8 162.6,82.8 164.4,82.8 166.2,82.8 168.0,82.8 169.8,82.8 171.6,78.3 173.4,82.8 175.2,82.8 177.0,82.8 178.8,82.8 180.6,78.3 182.4,91.7 184.2,91.7 186.0,87.2 187.8,82.8 189.6,82.8 191.4,82.8 193.2,82.8 195.0,82.8 196.8,82.8 198.6,82.8 200.4,82.8 202.3,82.8 204.1,82.8 205.9,82.8 207.7,82.8 209.5,82.8 211.3,82.8 213.1,82.8 214.9,82.8 216.7,82.8 218.5,82.8 220.3,82.8 222.1,69.3 223.9,69.3 225.7,82.8 227.5,82.8 229.3,78.3 231.1,78.3 232.9,87.2 234.7,87.2 236.5,87.2 238.4,87.2 240.2,91.7 242.0,91.7 243.8,91.7 245.6,100.7 247.4,87.2 249.2,100.7 251.0,100.7 252.8,100.7 254.6,100.7 256.4,100.7 258.2,100.7 260.0,100.7 261.8,100.7 263.6,100.7 265.4,100.7 267.2,100.7 269.0,96.2 270.8,100.7 272.6,100.7 274.4,100.7 276.2,100.7 278.1,100.7 279.8,100.7 281.7,100.7 283.5,100.7 285.3,100.7 287.1,100.7 288.9,96.2 290.7,96.2 292.5,100.7 294.3,100.7 296.1,100.7 297.9,96.2 299.7,96.2 301.5,96.2 303.3,96.2 305.1,96.2 306.9,96.2 308.7,96.2 310.5,96.2 312.3,96.2 314.1,96.2 315.9,96.2 317.7,96.2 319.5,96.2 321.4,96.2 323.2,96.2 325.0,96.2 326.8,96.2 328.6,96.2 332.2,96.2 334.0,96.2 335.8,96.2 337.6,100.7 339.4,100.7 341.2,100.7 343.0,100.7 344.8,100.7 346.6,100.7 348.4,100.7 350.2,100.7 352.0,100.7 353.8,96.2 355.6,100.7 357.5,96.2 359.3,100.7 361.1,100.7 362.9,96.2 364.7,96.2 366.5,100.7 368.3,96.2 370.1,96.2 371.9,96.2 373.7,96.2 375.5,96.2 377.3,96.2 379.1,96.2 380.9,96.2 382.7,96.2 384.5,96.2 386.3,96.2 388.1,96.2 389.9,96.2 391.7,96.2 393.5,96.2 395.3,96.2 397.1,96.2 399.0,96.2 400.8,96.2 402.6,96.2 404.4,100.7 406.2,100.7 408.0,100.7 409.8,100.7 411.6,96.2 413.4,100.7 415.2,100.7 417.0,100.7 418.8,100.7 420.6,100.7 422.4,100.7 424.2,96.2 426.0,96.2 427.8,96.2 429.6,96.2 431.4,96.2 433.2,96.2 435.0,96.2 436.8,96.2 438.6,96.2 440.5,96.2 442.3,96.2 444.1,96.2 445.9,96.2 447.7,96.2 449.5,96.2 451.3,96.2 453.1,96.2 454.9,96.2 456.7,96.2 458.5,96.2 460.3,96.2 462.1,96.2 463.9,96.2 465.7,96.2 467.5,91.7 469.3,91.7 471.1,91.7 472.9,91.7 474.7,91.7 476.5,96.2 478.3,91.7 480.2,91.7 482.0,91.7 483.8,91.7 485.6,91.7 487.4,91.7 489.2,91.7 491.0,91.7 492.8,91.7 494.6,91.7 496.4,91.7 498.2,91.7 500.0,91.7 501.8,91.7 503.6,91.7 505.4,91.7 507.2,91.7 509.0,91.7 510.8,91.7 512.6,91.7 514.4,91.7 516.2,91.7 518.0,91.7 519.8,91.7 521.7,91.7 523.5,91.7 525.3,91.7 527.1,100.7 528.9,96.2 530.7,96.2 532.5,96.2 534.3,96.2 536.1,96.2 537.9,96.2 539.7,96.2 541.5,96.2 543.3,96.2 545.1,96.2 546.9,96.2 548.7,96.2 550.5,96.2 552.3,96.2 554.1,96.2 555.9,96.2 557.7,96.2 559.5,96.2 561.4,96.2 563.2,96.2 565.0,96.2 566.8,96.2 568.6,96.2 570.4,96.2 572.2,96.2 574.0,96.2 575.8,96.2 577.6,96.2 579.4,96.2 581.2,96.2 583.0,96.2 584.8,96.2 586.6,96.2 588.4,96.2 590.2,96.2 592.0,96.2 593.8,96.2 595.6,96.2 597.4,96.2 599.2,96.2 601.0,96.2 602.9,96.2 604.7,96.2 606.5,96.2 608.3,96.2 610.1,96.2 611.9,96.2 613.7,96.2 615.5,96.2 617.3,96.2 619.1,96.2 620.9,96.2 622.7,96.2 624.5,96.2 626.3,96.2 628.1,96.2 629.9,96.2 631.7,96.2 633.5,96.2 635.3,96.2 637.1,96.2 638.9,96.2 640.8,96.2 642.6,96.2 644.4,96.2 646.2,96.2 648.0,96.2 649.8,96.2 651.6,96.2 653.4,96.2 655.2,96.2 657.0,96.2 658.8,96.2 660.6,96.2 662.4,96.2 664.2,96.2 666.0,96.2 667.8,96.2 669.6,96.2 671.4,96.2 673.2,96.2 675.0,96.2 676.8,96.2 678.6,96.2 680.4,96.2 682.3,96.2 684.1,96.2 685.9,96.2 687.7,96.2 689.5,96.2 691.3,96.2 693.1,96.2 694.9,96.2 696.7,96.2 698.5,96.2 700.3,96.2 702.1,96.2 703.9,96.2 705.7,96.2 707.5,96.2 709.3,96.2 711.1,96.2 712.9,96.2 714.7,96.2 716.5,96.2 718.3,96.2 720.1,20.0 722.0,20.0 723.8,96.2 725.6,127.6 727.4,150.0 729.2,109.7 731.0,105.2 732.8,105.2 734.6,105.2 736.4,105.2 738.2,105.2 740.0,96.2" class="spark-line"></polyline>
+  <line x1="20" y1="150" x2="740" y2="150"
+        class="spark-axis"></line>
+  <text x="20" y="14" class="spark-text">high 66.0%</text>
+  <text x="20" y="164" class="spark-text">low 51.5%</text>
+</svg>
+<figcaption>400 points from /prices-history, last 57.5%</figcaption>
+</figure>
+    <h4>Top holders</h4>
+    <div class="table-wrap"><table class=""><thead><tr><th>Wallet</th><th>Outcome</th><th>Amount</th></tr></thead><tbody><tr><td>0x2c335066fe58...</td><td>&mdash;</td><td>525,975.6</td></tr><tr><td>0xa38a455bbdd4...</td><td>&mdash;</td><td>175,438.0</td></tr><tr><td>0xd38b71f3e8ed...</td><td>&mdash;</td><td>130,000.0</td></tr><tr><td>0x1f3a646ce5cb...</td><td>&mdash;</td><td>56,494.3</td></tr><tr><td>0x9703676286b9...</td><td>&mdash;</td><td>32,848.6</td></tr></tbody></table></div>
+    <h4>Recent trades on this market</h4>
+    <div class="table-wrap"><table class=""><thead><tr><th>Side</th><th>Outcome</th><th>Price</th><th>American</th><th>Size</th><th>Time</th></tr></thead><tbody><tr><td>BUY</td><td>Steelers</td><td>0.589999991</td><td>-144</td><td>42.4</td><td>1790897250</td></tr><tr><td>BUY</td><td>Steelers</td><td>0.58</td><td>-138</td><td>525,959.0</td><td>1790897247</td></tr><tr><td>BUY</td><td>Steelers</td><td>0.579999997</td><td>-138</td><td>86.2</td><td>1790897238</td></tr><tr><td>BUY</td><td>Browns</td><td>0.4299999999</td><td>+133</td><td>581.4</td><td>1790897229</td></tr><tr><td>BUY</td><td>Steelers</td><td>0.5799999992</td><td>-138</td><td>517.2</td><td>1790897216</td></tr><tr><td>BUY</td><td>Steelers</td><td>0.5799999972</td><td>-138</td><td>28.4</td><td>1790897175</td></tr><tr><td>BUY</td><td>Browns</td><td>0.4299999997</td><td>+133</td><td>111.9</td><td>1790897175</td></tr><tr><td>BUY</td><td>Steelers</td><td>0.5799999995</td><td>-138</td><td>646.6</td><td>1790897172</td></tr></tbody></table></div>
+
+    <h3>Trader leaderboard at capture</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Rank</th><th>Name</th><th>Realized PnL</th><th>Volume</th></tr></thead><tbody><tr><td>1</td><td>SmartPredictOrNot</td><td>$873,804</td><td>$3,750,721</td></tr><tr><td>2</td><td>lllllllIlll</td><td>$202,332</td><td>$409,330</td></tr><tr><td>3</td><td>UpTheBlues</td><td>$171,189</td><td>$3,693,888</td></tr><tr><td>4</td><td>FORTNITEMASTER888</td><td>$169,780</td><td>$529,788</td></tr><tr><td>5</td><td>HomeRunHazard</td><td>$152,527</td><td>$2,517,446</td></tr><tr><td>6</td><td>Ne8om</td><td>$147,294</td><td>$536,091</td></tr><tr><td>7</td><td>Diabolical-Prize</td><td>$110,842</td><td>$964,452</td></tr><tr><td>8</td><td>BreakTheBank</td><td>$103,671</td><td>$374,235</td></tr></tbody></table></div>
+
+    <h3>Sports metadata</h3>
+    <div class="table-wrap"><table class=""><thead><tr><th>Sport key</th><th>Tag ids</th></tr></thead><tbody><tr><td>ufl</td><td>1,100639,1186,105925</td></tr><tr><td>lmp</td><td>1,100639,678,105936</td></tr><tr><td>cricpakt20cup</td><td>1,100639,517,104074</td></tr><tr><td>cricps</td><td>1,100639,517,104073</td></tr><tr><td>cricpsl</td><td>1,100639,517,103805</td></tr><tr><td>cricsa20</td><td>1,100639,517,103811</td></tr><tr><td>cricsm</td><td>1,100639,517,103810</td></tr><tr><td>cricss</td><td>1,100639,517,102817</td></tr><tr><td>liiga</td><td>1,100639,100088,105937</td></tr><tr><td>hbehfcl</td><td>1,100639,102897,105926</td></tr><tr><td>hockeychl</td><td>1,100639,100088,105938</td></tr><tr><td>ncaalax</td><td>1,100639,102393,105939</td></tr></tbody></table></div>
+    </section><section id="live"><p class="kicker">Anonymous access, measured</p><h2>Live probe results</h2>
+        <p class="lede">Every figure on this page came from an anonymous public
+        endpoint. Nothing required a key, an account or a credential.</p>
+        <p class="muted">Captured 2026-10-01T23:17:35Z. These are
+        point-in-time snapshots, not live values.</p>
+        <div class="table-wrap"><table class=""><thead><tr><th>Measure</th><th>Value</th></tr></thead><tbody><tr><td>Kalshi exchange active</td><td>True</td></tr><tr><td>Kalshi exchange shards</td><td>4</td></tr><tr><td>Kalshi series</td><td>14,561</td></tr><tr><td>Kalshi open events</td><td>13,878</td></tr><tr><td>Kalshi open markets</td><td>33,000 (budget reached)</td></tr><tr><td>Kalshi sports events</td><td>7,013</td></tr><tr><td>Polymarket open events</td><td>8,700+</td></tr><tr><td>Polymarket open markets</td><td>69,700+</td></tr><tr><td>Polymarket global open interest</td><td>$326,484,916</td></tr><tr><td>Polymarket sports keys</td><td>473</td></tr></tbody></table></div>
+        <h3>Kalshi WebSocket, attempted anonymously</h3>
+        
+        <p>The probe connected to Kalshi's production socket with no
+        credentials and sent a well-formed subscribe frame for the public
+        <code>ticker</code> channel.</p>
+        <div class="table-wrap"><table class=""><thead><tr><th>Result</th><th>Detail</th></tr></thead><tbody><tr><td>Handshake accepted</td><td>no</td></tr><tr><td>Server response</td><td><code>InvalidStatus: server rejected WebSocket connection: HTTP 401</code></td></tr></tbody></table></div>
+        <p class="note">HTTP 401 during the WebSocket upgrade. The connection
+        itself is authenticated, so no channel is reachable anonymously &mdash;
+        not even the public market-data channels. A purely read-only consumer
+        must either hold a key or poll REST.</p>
+        
+        <h3>Polymarket WebSocket, connected anonymously</h3>
+        <div class="table-wrap"><table class=""><thead><tr><th>Channel</th><th>Connected</th><th>Frames in window</th></tr></thead><tbody><tr><td><code>/ws/market</code></td><td>yes</td><td>2</td></tr><tr><td><code>sports-api /ws</code></td><td>yes</td><td>13</td></tr><tr><td>Kalshi <code>/ws/v2</code></td><td>no</td><td>0</td></tr></tbody></table></div>
+        </section><section id="specs"><p class="kicker">Machine-readable contracts</p><h2>Published specifications</h2>
+        <p class="lede">Both venues publish machine-readable specs. These are
+        the authoritative sources behind the endpoint inventories above.</p>
+        <div class="table-wrap"><table class=""><thead><tr><th>Spec</th><th>Covers</th><th>Size</th></tr></thead><tbody><tr><td><a href="https://docs.kalshi.com/openapi.yaml"><code>kalshi-openapi.yaml</code></a></td><td>Kalshi REST &mdash; predictions</td><td>366,380 bytes</td></tr><tr><td><a href="https://docs.kalshi.com/asyncapi.yaml"><code>kalshi-asyncapi.yaml</code></a></td><td>Kalshi WebSocket channels</td><td>166,145 bytes</td></tr><tr><td><a href="https://docs.kalshi.com/perps_openapi.yaml"><code>kalshi-perps-openapi.yaml</code></a></td><td>Kalshi REST &mdash; perpetuals</td><td>146,057 bytes</td></tr><tr><td><a href="https://docs.polymarket.com/api-spec/gamma-openapi.yaml"><code>gamma-openapi.yaml</code></a></td><td>Polymarket discovery and metadata</td><td>82,945 bytes</td></tr><tr><td><a href="https://docs.polymarket.com/api-spec/clob-openapi.yaml"><code>clob-openapi.yaml</code></a></td><td>Polymarket pricing and trading</td><td>216,099 bytes</td></tr><tr><td><a href="https://docs.polymarket.com/api-spec/data-openapi.yaml"><code>data-openapi.yaml</code></a></td><td>Polymarket activity and analytics</td><td>61,162 bytes</td></tr></tbody></table></div>
+        <p class="note">The Kalshi AsyncAPI describes 15 channels and over 40
+        message types, including the subscription commands and control
+        frames. The Polymarket specs are split per service, which mirrors the
+        host split.</p>
+        </section><section id="gaps"><p class="kicker">Constraints worth knowing before building</p><h2>What is not available, and what bites</h2><div class="grid"><div class="card"><h4>Kalshi will not stream to an anonymous client</h4><p>The WebSocket upgrade returned <code>401</code> without a key, and that includes channels carrying only public data. A read-only consumer either holds credentials or polls REST.</p></div><div class="card"><h4>Kalshi candlesticks need the series ticker in the path</h4><p>The live route is <code>/series/{series_ticker}/markets/{ticker}/candlesticks</code>. The shorter <code>/markets/{ticker}/candlesticks</code> returns <code>404</code>, and prices are nested as <code>close_dollars</code> rather than a flat price field.</p></div><div class="card"><h4>Kalshi partitions history, and the cutoff moves</h4><p>Settled markets, fills and completed orders leave the live endpoints. A reader that only queries live endpoints silently loses older rows, so read <code>/historical/cutoff</code> and query both sides.</p></div><div class="card"><h4>Kalshi meters authenticated calls</h4><p>Every call costs tokens, batches bill per item, and a 429 carries no <code>Retry-After</code>. Sustained polling is a budget question, not only a latency one.</p></div><div class="card"><h4>Gamma offset pagination stops early</h4><p>A survey walk stopped at 2,100 events and 500 markets on offset paging. The keyset routes return a <code>next_cursor</code> and enumerate fully. Anything that must be complete has to use keyset.</p></div><div class="card"><h4>Polymarket ids are three different things</h4><p>A market carries a condition id, a slug and a numeric id, and each outcome has its own very large token id. Gamma returns token ids as a JSON string nested inside a string. Using the wrong one is the most common integration error.</p></div><div class="card"><h4>Polymarket order placement is geoblocked</h4><p>Market data is open worldwide, but placing orders is restricted by jurisdiction and has its own US documentation set. A trading integration is a legal question before it is a technical one.</p></div><div class="card"><h4>Polymarket limits are per IP</h4><p>Cloudflare throttles by IP on sliding windows, so a shared egress address shares the budget. Order and cancellation calls add a per-signer bucket on top.</p></div><div class="card"><h4>Neither venue exposes resting order identity</h4><p>Both publish an order book and a trade tape. Neither publishes who is behind a level. On Polymarket, positions become public by wallet after the fact.</p></div><div class="card"><h4>Prices are probabilities, not odds</h4><p>Both quote a probability between 0 and 1. Converting to the American convention used in this report is a display step, applied throughout so the two venues read like the rest of our material.</p></div></div></section><section id="relevance"><p class="kicker">Scope note</p><h2>Reading this against our own stack</h2>
+        <p class="lede">Both are prediction markets quoting a probability, not
+        sportsbooks quoting a price. That difference decides how each could be
+        used here.</p>
+
+        <h3>What they are not</h3>
+        <p>Neither is a substitute for watching the site. Our bots price and
+        gap against what the book shows on
+        <code>bet105.danchrow.com</code>; a third-party order book is a
+        reference, never the site. Nothing in this report changes that.</p>
+
+        <h3>Where each is genuinely useful as a reference</h3>
+        <div class="grid">
+          <div class="card">
+            <h4>Kalshi &mdash; a second opinion on US sports and macro</h4>
+            <p>Regulated, dollars-settled event contracts with a real order
+            book and a published trade tape. Sports are the largest single
+            category by event count. The catch for a live path is that the
+            socket needs credentials and every call costs tokens, so it suits
+            slow comparison rather than a streaming leg.</p>
+          </div>
+          <div class="card">
+            <h4>Polymarket &mdash; public push, and an independent ledger</h4>
+            <p>The market socket is anonymous, so a live divergent-price check
+            needs no credentials at all. Because everything settles on
+            Polygon, history can be rebuilt from chain data if the API ever
+            disagrees with itself.</p>
+          </div>
+        </div>
+
+        <h3>Two practical cautions</h3>
+        <p><strong>A different question is a different price.</strong> A
+        prediction market prices a binary question with its own resolution
+        rules and its own fees. A game-winner contract and a moneyline are not
+        the same instrument, and the gap between them is not automatically an
+        edge.</p>
+        <p><strong>Liquidity is thin away from the headline.</strong> The
+        worked examples in this report were chosen because they are two-sided
+        and liquid. Most of the long tail is not, and a wide book at a
+        low-probability price is not a tradable signal.</p>
+
+        <h3>Scale, for context</h3>
+        <p>Polymarket reports global open interest of
+        <strong>$326,484,916</strong>, and Kalshi's open board runs to tens of thousands of
+        markets of which several thousand are sports events. Both are large
+        enough that a divergence check would have to be scoped to the fixtures
+        we actually serve, not run across the whole catalog.</p>
+
+        <p class="muted">Any decision to add either as a feed source is a scope
+        call, not an implementation detail.</p>
+        </section><section id="sources"><p class="kicker">Every URL used</p><h2>Sources</h2><div class="table-wrap"><table class=""><thead><tr><th>Document</th></tr></thead><tbody><tr><td><a href="https://docs.kalshi.com/llms.txt">Kalshi API documentation index</a></td></tr><tr><td><a href="https://docs.kalshi.com/getting_started/api_environments">Kalshi: environments and endpoints</a></td></tr><tr><td><a href="https://docs.kalshi.com/getting_started/quick_start_market_data">Kalshi: market data quick start</a></td></tr><tr><td><a href="https://docs.kalshi.com/getting_started/rate_limits">Kalshi: rate limits and tiers</a></td></tr><tr><td><a href="https://docs.kalshi.com/getting_started/historical_data">Kalshi: historical data</a></td></tr><tr><td><a href="https://docs.kalshi.com/websockets/websocket-connection">Kalshi: WebSocket connection</a></td></tr><tr><td><a href="https://docs.kalshi.com/getting_started/quick_start_websockets">Kalshi: WebSocket quick start</a></td></tr><tr><td><a href="https://docs.kalshi.com/getting_started/orderbook_responses">Kalshi: order book responses</a></td></tr><tr><td><a href="https://docs.kalshi.com/openapi.yaml">Kalshi: OpenAPI</a></td></tr><tr><td><a href="https://docs.kalshi.com/asyncapi.yaml">Kalshi: AsyncAPI</a></td></tr><tr><td><a href="https://docs.kalshi.com/perps_openapi.yaml">Kalshi: perps OpenAPI</a></td></tr><tr><td><a href="https://docs.polymarket.com/llms.txt">Polymarket documentation index</a></td></tr><tr><td><a href="https://docs.polymarket.com/getting-started/api">Polymarket: API overview</a></td></tr><tr><td><a href="https://docs.polymarket.com/api-reference/introduction">Polymarket: API reference</a></td></tr><tr><td><a href="https://docs.polymarket.com/api-reference/rate-limits">Polymarket: rate limits</a></td></tr><tr><td><a href="https://docs.polymarket.com/market-data/realtime-data">Polymarket: real-time data</a></td></tr><tr><td><a href="https://docs.polymarket.com/market-data/overview">Polymarket: market data overview</a></td></tr><tr><td><a href="https://docs.polymarket.com/market-data/public-analytics">Polymarket: analytics</a></td></tr><tr><td><a href="https://docs.polymarket.com/resources/blockchain-data">Polymarket: blockchain data resources</a></td></tr><tr><td><a href="https://docs.polymarket.com/api-reference/wss/market">Polymarket: market channel AsyncAPI</a></td></tr><tr><td><a href="https://docs.polymarket.com/api-reference/wss/sports">Polymarket: sports channel AsyncAPI</a></td></tr><tr><td><a href="https://docs.polymarket.com/api-spec/gamma-openapi.yaml">Polymarket: Gamma OpenAPI</a></td></tr><tr><td><a href="https://docs.polymarket.com/api-spec/clob-openapi.yaml">Polymarket: CLOB OpenAPI</a></td></tr><tr><td><a href="https://data-api.polymarket.com/v2/openapi.json">Polymarket: Data API v2 OpenAPI</a></td></tr><tr><td><a href="https://docs.polymarket.us">Polymarket: US documentation</a></td></tr></tbody></table></div><p class="muted">Every figure in this report is either quoted from
+        these documents or was captured directly from the public endpoints
+        described above. Live captures are labelled with their capture time
+        and are point-in-time snapshots.</p></section>
+<footer>
+  <p>Generated 2026-10-02 00:41 UTC from captured public data. Every figure
+  labelled <em>captured</em> is a point-in-time snapshot taken from anonymous
+  endpoints and is not a live value.</p>
+  <p>Prices appear in American odds alongside each venue's own probability
+  quote. That is a display convention only; the underlying value is the
+  venue's.</p>
+</footer>
+</div>
+</body>
+</html>
