@@ -23,7 +23,7 @@ ROOT = os.path.dirname(HERE)
 SOURCE = os.path.join(ROOT, "docs", "PLAN.md")
 OUTPUT = os.path.join(ROOT, "docs", "plan.html")
 
-REPORT_URL = "https://danhamilt.github.io/prediction-markets-report/"
+REPORT_URL = "https://kaz-markets.github.io/prediction-markets-report/"
 
 
 def code_spans(text: str) -> str:

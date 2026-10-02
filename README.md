@@ -4,7 +4,7 @@ An interactive report on everything **Kalshi** and **Polymarket** expose
 publicly: REST, WebSocket and FIX surfaces, historical archives, published
 specs, rate limits, auth models and on-chain data.
 
-**Read it here:** https://danhamilt.github.io/prediction-markets-report/
+**Read it here:** https://kaz-markets.github.io/prediction-markets-report/
 
 ## What makes this different from the docs
 

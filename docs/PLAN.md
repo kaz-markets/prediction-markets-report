@@ -1,7 +1,7 @@
 # kaz-socket: architecture, cost model and the US election slice
 
 Status: **plan**. The service does not exist yet.
-Companion documents: the [API survey](https://danhamilt.github.io/prediction-markets-report/)
+Companion documents: the [API survey](https://kaz-markets.github.io/prediction-markets-report/)
 this is built on, and the `kaz_skin_off_drever_onto_gcp` plan it pairs with.
 
 ---
@@ -13,9 +13,9 @@ apart.
 
 | | |
 |---|---|
-| **`danhamilt/prediction-markets-report`** (public) | The API research: what Kalshi and Polymarket expose, measured. Plus an **Elections** section, plus this plan. |
-| **`danhamilt/kaz-socket`** (private) | The service this document describes. Built after this plan is published. |
-| **`danhamilt/<skin repo>`** (private) | The bet105 skin. Already built and pushed, parked on the `drhamilton.dev` GCP account and `OPTIC_API_KEY`. |
+| **`kaz-markets/prediction-markets-report`** (public) | The API research: what Kalshi and Polymarket expose, measured. Plus an **Elections** section, plus this plan. |
+| **`kaz-markets/kaz-socket`** (private) | The service this document describes. Built after this plan is published. |
+| **`kaz-markets/<skin repo>`** (private) | The bet105 skin. Already built and pushed, parked on the `drhamilton.dev` GCP account and `OPTIC_API_KEY`. |
 
 ---
 
