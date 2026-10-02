@@ -127,6 +127,19 @@ Where a repository has a `STATUS.md`, it is rewritten every session: what is run
 paused, what the owner decided. Never append to it, and never let it go a day without an edit.
 Everything else in `docs/` is stable and edited in place.
 
+## Report each session
+
+A session ends with a short report to the owner it was run for. An agent working for Jacob
+reports to Jacob. An agent working for Dan reports to Dan. This holds for every assistant,
+Claude among them.
+
+The report is short and factual: what changed, what is running, what is blocked, and what
+needs a decision. Cite the pull request, the issue or the doc instead of restating a diff.
+
+A report is a doc, or a line in `STATUS.md`, not a message. It never mentions a person, and
+it never asks for a review, an approval or a merge. The board and the notification rule are
+in `docs/TASKS.md`.
+
 ## Ground rules
 
 - Fake players only. No real provider, keys or account is contacted from these repos.
