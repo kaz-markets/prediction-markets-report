@@ -26,12 +26,32 @@ OUTPUT = os.path.join(ROOT, "docs", "plan.html")
 REPORT_URL = "https://danhamilt.github.io/prediction-markets-report/"
 
 
+def code_spans(text: str) -> str:
+    """Escape text, converting any backtick spans to <code>.
+
+    Used for the inside of bold, where a span like a qualified table name can
+    sit inside the emphasis.
+    """
+    parts = re.split(r"(`[^`]+`)", text)
+    out: list[str] = []
+    for part in parts:
+        if len(part) > 2 and part.startswith("`") and part.endswith("`"):
+            out.append(f"<code>{html.escape(part[1:-1])}</code>")
+        else:
+            out.append(html.escape(part))
+    return "".join(out)
+
+
 def inline(text: str) -> str:
-    """Inline markdown: code spans first, then bold, then links."""
+    """Inline markdown: code spans, bold, then links.
+
+    Bold is matched non-greedily so it can contain an asterisk, which matters
+    for text like a qualified table name.
+    """
     out: list[str] = []
     pattern = re.compile(
         r"(`[^`]+`)"
-        r"|(\*\*[^*]+\*\*)"
+        r"|(\*\*.+?\*\*)"
         r"|(\[[^\]]+\]\([^)]+\))"
     )
     position = 0
@@ -41,7 +61,7 @@ def inline(text: str) -> str:
         if chunk.startswith("`"):
             out.append(f"<code>{html.escape(chunk[1:-1])}</code>")
         elif chunk.startswith("**"):
-            out.append(f"<strong>{html.escape(chunk[2:-2])}</strong>")
+            out.append(f"<strong>{code_spans(chunk[2:-2])}</strong>")
         else:
             label, url = re.match(r"\[([^\]]+)\]\(([^)]+)\)", chunk).groups()  # type: ignore[union-attr]
             external = url.startswith("http")
@@ -53,6 +73,17 @@ def inline(text: str) -> str:
         position = match.end()
     out.append(html.escape(text[position:]))
     return "".join(out)
+
+
+def is_block_start(line: str) -> bool:
+    """True when a line begins a new block rather than continuing one."""
+    stripped = line.strip()
+    if not stripped:
+        return True
+    return stripped.startswith(("#", "|", "- ", ">", "```")) or stripped == "---"
+
+
+NUMBERED = re.compile(r"^\d+\.\s+(.*)$")
 
 
 DIAGRAM_SVG = """<figure class="diagram">
@@ -187,14 +218,48 @@ def convert(markdown: str) -> str:
             index += 1
             continue
 
-        # unordered list
+        # unordered list, with wrapped continuation lines joined in
         if line.startswith("- "):
             items: list[str] = []
-            while index < total and lines[index].startswith("- "):
-                items.append(lines[index][2:])
-                index += 1
+            current = line[2:]
+            index += 1
+            while index < total:
+                following = lines[index]
+                if following.startswith("- "):
+                    items.append(current)
+                    current = following[2:]
+                    index += 1
+                elif not is_block_start(following):
+                    current = f"{current} {following.strip()}"
+                    index += 1
+                else:
+                    break
+            items.append(current)
             body = "".join(f"<li>{inline(item)}</li>" for item in items)
             out.append(f"<ul>{body}</ul>")
+            continue
+
+        # ordered list, same continuation handling
+        numbered = NUMBERED.match(line)
+        if numbered:
+            items = []
+            current = numbered.group(1)
+            index += 1
+            while index < total:
+                following = lines[index]
+                step = NUMBERED.match(following)
+                if step:
+                    items.append(current)
+                    current = step.group(1)
+                    index += 1
+                elif not is_block_start(following):
+                    current = f"{current} {following.strip()}"
+                    index += 1
+                else:
+                    break
+            items.append(current)
+            body = "".join(f"<li>{inline(item)}</li>" for item in items)
+            out.append(f"<ol>{body}</ol>")
             continue
 
         # blockquote

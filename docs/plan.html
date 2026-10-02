@@ -116,29 +116,15 @@ footer {
 <hr>
 <h2 id="0-where-the-plan-and-the-research-live">0. Where the plan and the research live</h2>
 <p>One repo holds both, so the plan and the evidence behind it cannot drift apart.</p>
-<div class="table-wrap"><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>`danhamilt/prediction-markets-report`</strong> (public)</td><td>The API research: what Kalshi and Polymarket expose, measured. Plus an <strong>Elections</strong> section, plus this plan.</td></tr><tr><td><strong>`danhamilt/kaz-socket`</strong> (private)</td><td>The service this document describes. Built after this plan is published.</td></tr><tr><td><strong>`danhamilt/&lt;skin repo&gt;`</strong> (private)</td><td>The bet105 skin. Already built and pushed, parked on the <code>drhamilton.dev</code> GCP account and <code>OPTIC_API_KEY</code>.</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong><code>danhamilt/prediction-markets-report</code></strong> (public)</td><td>The API research: what Kalshi and Polymarket expose, measured. Plus an <strong>Elections</strong> section, plus this plan.</td></tr><tr><td><strong><code>danhamilt/kaz-socket</code></strong> (private)</td><td>The service this document describes. Built after this plan is published.</td></tr><tr><td><strong><code>danhamilt/&lt;skin repo&gt;</code></strong> (private)</td><td>The bet105 skin. Already built and pushed, parked on the <code>drhamilton.dev</code> GCP account and <code>OPTIC_API_KEY</code>.</td></tr></tbody></table></div>
 <hr>
 <h2 id="1-what-changed-since-the-first-draft">1. What changed since the first draft</h2>
-<ul><li>The pros and cons of each scope option are **a report, not a decision made</li></ul>
-<p>quietly**. Section 3, and it explains &quot;outbound only&quot; in plain words.</p>
-<ul><li>A <strong>live cache with TTL, priced against a straight relay</strong>. Section 5.</li><li>The first target moved from &quot;replace Optic&quot; to **a category the incumbent</li></ul>
-<p>does not carry<strong>, then narrowed to </strong>US election markets**. Section 6.</p>
-<ul><li><strong>Rate limits and costs</strong> for Kalshi, Polymarket, Novig and Optic.</li></ul>
-<p>Section 4, with measured numbers.</p>
-<ul><li>The front end <strong>can change</strong>. Section 8.</li><li><code>kaz_skin_off_drever_onto_gcp</code> Phase 0 is <strong>complete and verified</strong>, so this</li></ul>
-<p>is the other half of a two-repo stack. Section 2.</p>
-<ul><li>A finding that was not expected: **price-history and candlestick surfaces</li></ul>
-<p>are free on both venues**, so a self-built history costs storage only. Section 4.</p>
+<ul><li>The pros and cons of each scope option are <strong>a report, not a decision made quietly</strong>. Section 3, and it explains &quot;outbound only&quot; in plain words.</li><li>A <strong>live cache with TTL, priced against a straight relay</strong>. Section 5.</li><li>The first target moved from &quot;replace Optic&quot; to <strong>a category the incumbent does not carry</strong>, then narrowed to <strong>US election markets</strong>. Section 6.</li><li><strong>Rate limits and costs</strong> for Kalshi, Polymarket, Novig and Optic. Section 4, with measured numbers.</li><li>The front end <strong>can change</strong>. Section 8.</li><li><code>kaz_skin_off_drever_onto_gcp</code> Phase 0 is <strong>complete and verified</strong>, so this is the other half of a two-repo stack. Section 2.</li><li>A finding that was not expected: <strong>price-history and candlestick surfaces are free on both venues</strong>, so a self-built history costs storage only. Section 4.</li></ul>
 <hr>
 <h2 id="2-the-two-repo-boundary">2. The two-repo boundary</h2>
 <p><code>kaz_skin_off_drever_onto_gcp</code> is Phase 0 complete, Phase 1 parked.</p>
-<ul><li>Phase 0 done: socket-service revert merged, WAF back to the two original</li></ul>
-<p>origins, Route 53 records deleted, <code>kaz</code> namespace and ALBs gone, <code>deploy/kaz/</code> removed from kaz-control.</p>
-<ul><li>Phase 1 (the bet105 skin repo) is <strong>built and pushed</strong>, waiting on the</li></ul>
-<p><code>drhamilton.dev</code> GCP account and <code>OPTIC_API_KEY</code>.</p>
-<ul><li>Phase 2 asks for *&quot;a separate always-on service (its own repo or deployable)</li></ul>
-<p>that holds the feed connection and exposes the latest snapshot over an internal HTTP endpoint&quot;*, because Cloud Run scale-to-zero cannot hold a long-lived connection.</p>
-<p><strong>That separate always-on service is `kaz-socket`.</strong> The skin plan reserves the role; this plan fills it.</p>
+<ul><li>Phase 0 done: socket-service revert merged, WAF back to the two original origins, Route 53 records deleted, <code>kaz</code> namespace and ALBs gone, <code>deploy/kaz/</code> removed from kaz-control.</li><li>Phase 1 (the bet105 skin repo) is <strong>built and pushed</strong>, waiting on the <code>drhamilton.dev</code> GCP account and <code>OPTIC_API_KEY</code>.</li><li>Phase 2 asks for *&quot;a separate always-on service (its own repo or deployable) that holds the feed connection and exposes the latest snapshot over an internal HTTP endpoint&quot;*, because Cloud Run scale-to-zero cannot hold a long-lived connection.</li></ul>
+<p><strong>That separate always-on service is <code>kaz-socket</code>.</strong> The skin plan reserves the role; this plan fills it.</p>
 <p>The seam, stated once so neither plan drifts:</p>
 <div class="table-wrap"><table><thead><tr><th></th><th>kaz-socket</th><th>bet105-skin</th></tr></thead><tbody><tr><td>Owns</td><td>upstream connections, realtime fanout</td><td>SPA, HTTP API, demo balance</td></tr><tr><td>Lifecycle</td><td>always-on</td><td>scale-to-zero, stateless</td></tr><tr><td>Data</td><td>holds provider sockets</td><td>reads a snapshot over HTTP, subscribes for pushes</td></tr><tr><td>Never</td><td>renders a page, owns a bet</td><td>holds a provider socket</td></tr></tbody></table></div>
 <p>Neither hosts the other&#x27;s protocol. The drever <code>pandora.danchrow.com</code> socket stays out of both, per Phase 2&#x27;s explicit deferral.</p>
@@ -200,11 +186,7 @@ connection; consumers read from it and never open a provider socket.</figcaption
 <hr>
 <h2 id="3-the-scope-decision">3. The scope decision</h2>
 <h3 id="the-three-options-in-plain-words">The three options in plain words</h3>
-<ul><li><strong>Inbound only.</strong> kaz-socket is the *front door for data coming in*. It</li></ul>
-<p>opens the sockets <strong>to Kalshi and Polymarket</strong> and hands the numbers to kaz-control. It holds no browser connections. Nothing a player sees changes.</p>
-<ul><li><strong>Outbound only.</strong> kaz-socket is the *loudspeaker*. It holds no provider</li></ul>
-<p>connection; it takes prices kaz-control already computed and pushes them <strong>out to browsers</strong>. It replaces the five <code>/ws/*</code> endpoints. All the data still arrives the old way.</p>
-<ul><li><strong>Both.</strong> The front door and the loudspeaker in one service.</li></ul>
+<ul><li><strong>Inbound only.</strong> kaz-socket is the *front door for data coming in*. It opens the sockets <strong>to Kalshi and Polymarket</strong> and hands the numbers to kaz-control. It holds no browser connections. Nothing a player sees changes.</li><li><strong>Outbound only.</strong> kaz-socket is the *loudspeaker*. It holds no provider connection; it takes prices kaz-control already computed and pushes them <strong>out to browsers</strong>. It replaces the five <code>/ws/*</code> endpoints. All the data still arrives the old way.</li><li><strong>Both.</strong> The front door and the loudspeaker in one service.</li></ul>
 <h3 id="a-inbound-only">A. Inbound only</h3>
 <p><strong>Pros.</strong> Smallest real win, and it is the slice the election work needs. Kalshi and Polymarket are mocks today, so this makes them real. Takes snapshot pulls and socket parsing off the API event loop, which <code>STATUS.md</code> already lists as a pressure point. The seam is already defined (<code>SourceAdapter</code>, <code>QuoteSink</code>, <code>Quote</code>, <code>SourceHealth</code>), so nothing has to be invented. No auth to duplicate.</p>
 <p><strong>Cons.</strong> Does not fix delivery or scale; <code>/ws/*</code> stays single-process with no resume. Needs a kaz-control change to consume the result.</p>
@@ -230,13 +212,10 @@ connection; consumers read from it and never open a provider socket.</figcaption
 <hr>
 <h2 id="5-live-cache-with-ttl-versus-a-straight-relay">5. Live cache with TTL versus a straight relay</h2>
 <h3 id="what-each-one-is">What each one is</h3>
-<ul><li><strong>Straight relay.</strong> Hold the upstream socket, forward every message to every</li></ul>
-<p>subscriber. Nothing is stored; the clients are the state.</p>
-<ul><li><strong>Live cache with TTL.</strong> Hold the upstream socket, write the current value</li></ul>
-<p>into a cache with a time-to-live, and publish only on real change and at most once per TTL window. Clients read the cached value and receive pushes when it moves.</p>
+<ul><li><strong>Straight relay.</strong> Hold the upstream socket, forward every message to every subscriber. Nothing is stored; the clients are the state.</li><li><strong>Live cache with TTL.</strong> Hold the upstream socket, write the current value into a cache with a time-to-live, and publish only on real change and at most once per TTL window. Clients read the cached value and receive pushes when it moves.</li></ul>
 <h3 id="where-the-cost-actually-is">Where the cost actually is</h3>
 <p>Not bandwidth, for elections. The measured rate is tiny. It is in three other places:</p>
-<p>1. <strong>Upstream connections and provider budget.</strong> These belong to the <strong>account, not the instance</strong>. A relay scales by adding instances, and each instance opens its own upstream and burns the same budget again. A cache with a single leader lease opens <strong>one</strong> upstream no matter how many instances run. 2. <strong>Cold start and restart.</strong> A relay has no memory, so every reconnect and every deploy re-pulls the whole board. A cache resumes from <code>change_log</code>. 3. <strong>Fanout amplification.</strong> A relay&#x27;s egress grows with *ticks × subscribers*. A TTL coalesces that to *changes × subscribers*. Elections are small either way, but the slice must not paint us into a corner for live sports later.</p>
+<ol><li><strong>Upstream connections and provider budget.</strong> These belong to the <strong>account, not the instance</strong>. A relay scales by adding instances, and each instance opens its own upstream and burns the same budget again. A cache with a single leader lease opens <strong>one</strong> upstream no matter how many instances run.</li><li><strong>Cold start and restart.</strong> A relay has no memory, so every reconnect and every deploy re-pulls the whole board. A cache resumes from <code>change_log</code>.</li><li><strong>Fanout amplification.</strong> A relay&#x27;s egress grows with *ticks × subscribers*. A TTL coalesces that to *changes × subscribers*. Elections are small either way, but the slice must not paint us into a corner for live sports later.</li></ol>
 <h3 id="priced">Priced</h3>
 <p>At the measured <strong>0.0402 messages per token per second</strong> (one update every <strong>24.9 seconds</strong>):</p>
 <div class="table-wrap"><table><thead><tr><th>Quantity</th><th>Straight relay</th><th>Cache with a 1s TTL</th></tr></thead><tbody><tr><td>Upstream messages/s, 1,000 markets (2,000 tokens)</td><td>~80</td><td>~80</td></tr><tr><td>Upstream connections as instances grow</td><td><strong>one per instance</strong>, each burning the provider budget again</td><td><strong>one total</strong>, via a single leader lease</td></tr><tr><td>Egress at 500 clients watching everything</td><td>~40,000 msg/s</td><td>at most ~1,000 msg/s</td></tr><tr><td>After a restart or deploy</td><td>re-pulls the whole board</td><td>resumes from the change log</td></tr></tbody></table></div>
@@ -246,79 +225,38 @@ connection; consumers read from it and never open a provider socket.</figcaption
 <hr>
 <h2 id="6-the-first-slice-us-election-markets">6. The first slice: US election markets</h2>
 <p>Why this beats replacing Optic:</p>
-<ul><li><strong>Zero data cost and no negotiation</strong>, against an Optic sport add-on at an</li></ul>
-<p>unverified ~$5,000 per month.</p>
-<ul><li><strong>Nothing to migrate.</strong> Optic stays exactly as it is for sports. The change</li></ul>
-<p>is purely additive, so there is no cutover risk and no sports regression.</p>
-<ul><li><strong>A category the incumbent does not carry.</strong> DraftKings&#x27; depth is US sports;</li></ul>
-<p>Kalshi and Polymarket&#x27;s depth is elections and politics.</p>
-<ul><li><strong>A gentle tick rate</strong>, so the first release cannot be embarrassed by</li></ul>
-<p>latency and the caching design is proven without load.</p>
+<ul><li><strong>Zero data cost and no negotiation</strong>, against an Optic sport add-on at an unverified ~$5,000 per month.</li><li><strong>Nothing to migrate.</strong> Optic stays exactly as it is for sports. The change is purely additive, so there is no cutover risk and no sports regression.</li><li><strong>A category the incumbent does not carry.</strong> DraftKings&#x27; depth is US sports; Kalshi and Polymarket&#x27;s depth is elections and politics.</li><li><strong>A gentle tick rate</strong>, so the first release cannot be embarrassed by latency and the caching design is proven without load.</li></ul>
 <h3 id="measured-coverage">Measured coverage</h3>
-<ul><li><strong>Kalshi:</strong> 462 US-election series inside a 1,989-series Elections category.</li></ul>
-<p>A 40-series sample held 263 open markets.</p>
-<ul><li><strong>Polymarket:</strong> 635 genuinely open US election markets. A naive sweep</li></ul>
-<p>counted 1,769 candidates; <strong>747 were resolved</strong> and had to be filtered out.</p>
+<ul><li><strong>Kalshi:</strong> 462 US-election series inside a 1,989-series Elections category. A 40-series sample held 263 open markets.</li><li><strong>Polymarket:</strong> 635 genuinely open US election markets. A naive sweep counted 1,769 candidates; <strong>747 were resolved</strong> and had to be filtered out.</li></ul>
 <h3 id="measured-tick-rate">Measured tick rate</h3>
 <p>61 messages in 63.3 seconds across 24 outcome tokens: <strong>0.96 messages/s overall, 0.0402 per token per second, one update every 24.9 seconds per market.</strong> Frame mix was 12 book snapshots, 6 price changes, 1 last-trade price. Live sports is orders of magnitude faster.</p>
 <h3 id="scope">Scope</h3>
 <p>Catalog from Kalshi (<code>category=Elections</code>, filtered to US series) and Polymarket (politics tags, search, and a volume-ranked sweep). Both normalised into the shape kaz-control already understands: <code>Quote.cents</code> as a 1..99 contract price, converted by the existing <code>probToAmerican(cents / 100)</code>. One new market kind for election markets, plus a mutually-exclusive-leg flag so a parlay cannot combine two outcomes of the same race. A live demo board.</p>
 <p>Out of scope: settlement, grading, anything involving real money.</p>
 <h3 id="integration-notes-found-while-measuring">Integration notes found while measuring</h3>
-<ul><li><strong>Resolved markets are returned by default.</strong> A resolved market carries a 0</li></ul>
-<p>or 1 outcome price, which is the reliable filter.</p>
-<ul><li><strong>The cents scale is not always 1 to 99.</strong> Polymarket quotes longshots below</li></ul>
-<p>a cent, so a contract price of <code>0.05</code> cents is real. A reader that clamps cents to a whole number silently drops those markets.</p>
-<ul><li><strong>Longshot American prices explode.</strong> A 0.05-cent contract is roughly</li></ul>
-<p><code>+199,900</code> in American odds. Arithmetically correct, useless on a screen, so an election UI needs a floor.</p>
-<ul><li><strong>Kalshi&#x27;s election catalog is mostly far-dated.</strong> The busiest open series in</li></ul>
-<p>the sample carried 13 markets.</p>
+<ul><li><strong>Resolved markets are returned by default.</strong> A resolved market carries a 0 or 1 outcome price, which is the reliable filter.</li><li><strong>The cents scale is not always 1 to 99.</strong> Polymarket quotes longshots below a cent, so a contract price of <code>0.05</code> cents is real. A reader that clamps cents to a whole number silently drops those markets.</li><li><strong>Longshot American prices explode.</strong> A 0.05-cent contract is roughly <code>+199,900</code> in American odds. Arithmetically correct, useless on a screen, so an election UI needs a floor.</li><li><strong>Kalshi&#x27;s election catalog is mostly far-dated.</strong> The busiest open series in the sample carried 13 markets.</li></ul>
 <hr>
 <h2 id="7-schema-fit-against-kaz-control">7. Schema fit against kaz-control</h2>
-<p>**kaz-socket owns <code>socket.*</code> in the same Postgres**, applied by its own runner writing <code>socket.schema_migrations</code>, so kaz-control&#x27;s <code>001</code>–<code>046</code> is untouched.</p>
+<p><strong>kaz-socket owns <code>socket.*</code> in the same Postgres</strong>, applied by its own runner writing <code>socket.schema_migrations</code>, so kaz-control&#x27;s <code>001</code>–<code>046</code> is untouched.</p>
 <p>Two gotchas found by reading the code:</p>
-<ul><li><code>enable_tenancy(tbl)</code> in <code>server/migrations/004_tenancy.sql</code> builds its DDL</li></ul>
-<p>with <code>format(&#x27;%I&#x27;, tbl)</code>, so passing <code>socket.connections</code> would quote the whole dotted name as a single identifier and break. The <code>socket</code> schema needs its own helper mirroring the same policy shape (<code>app.tenant_id</code>, RLS, and the <code>bracco_app</code> grant).</p>
-<ul><li>kaz-control&#x27;s runner globs <code>migrations/*.sql</code> against a single</li></ul>
-<p><code>public.schema_migrations</code>. kaz-socket must not drop files there.</p>
+<ul><li><code>enable_tenancy(tbl)</code> in <code>server/migrations/004_tenancy.sql</code> builds its DDL with <code>format(&#x27;%I&#x27;, tbl)</code>, so passing <code>socket.connections</code> would quote the whole dotted name as a single identifier and break. The <code>socket</code> schema needs its own helper mirroring the same policy shape (<code>app.tenant_id</code>, RLS, and the <code>bracco_app</code> grant).</li><li>kaz-control&#x27;s runner globs <code>migrations/*.sql</code> against a single <code>public.schema_migrations</code>. kaz-socket must not drop files there.</li></ul>
 <h3 id="tables">Tables</h3>
 <div class="table-wrap"><table><thead><tr><th>Table</th><th>Purpose</th></tr></thead><tbody><tr><td><code>socket.schema_migrations</code></td><td>kaz-socket&#x27;s own applied-migration record</td></tr><tr><td><code>socket.instances</code></td><td>service instances, for presence and the leader lease</td></tr><tr><td><code>socket.connections</code></td><td>one row per live connection</td></tr><tr><td><code>socket.subscriptions</code></td><td>connection to room, with its filter</td></tr><tr><td><code>socket.rooms</code></td><td>room registry</td></tr><tr><td><code>socket.live_price</code></td><td><strong>the TTL cache</strong>: current value per source and selection</td></tr><tr><td><code>socket.change_log</code></td><td><strong>bounded</strong>, post-coalesce publishes, for resume</td></tr><tr><td><code>socket.deliveries</code></td><td>sent/acked, for end-to-end latency</td></tr><tr><td><code>socket.source_streams</code></td><td>inbound stream state, cursors, reconnects</td></tr><tr><td><code>socket.source_events</code></td><td>normalised inbound events, for audit and replay</td></tr><tr><td><code>socket.outbox</code></td><td><strong>the integration seam</strong> kaz-control consumes</td></tr></tbody></table></div>
 <h3 id="friction-on-the-kaz-control-side-for-the-election-shape">Friction on the kaz-control side, for the election shape</h3>
 <p>Findings, not changes to make without a decision:</p>
-<ul><li><code>events.league_id</code> is <code>NOT NULL REFERENCES leagues(id)</code>, so an election needs</li></ul>
-<p>a <code>leagues</code> row, for example <code>us-election-2028</code> with <code>sport=&#x27;politics&#x27;</code>.</p>
-<ul><li><strong>`events.away` and `events.home` are both `NOT NULL jsonb`.</strong> A yes/no</li></ul>
-<p>election market has neither. Either the candidate goes in <code>home</code> with a synthetic <code>No</code> in <code>away</code>, or those columns get relaxed. This is the main schema friction and it is a kaz-control migration, so it is a product call.</p>
-<ul><li><code>leagues.sgp_factor</code> and <code>packages/core/src/sgpRules.ts</code> assume team sports.</li></ul>
-<p>Cross-race correlation is a real modelling question and is out of scope here; the mutually-exclusive flag is the minimum needed to stop an impossible parlay.</p>
-<ul><li><code>pricing_margins.market_kind</code> is a free string, so <code>election</code> needs no schema</li></ul>
-<p>change there.</p>
+<ul><li><code>events.league_id</code> is <code>NOT NULL REFERENCES leagues(id)</code>, so an election needs a <code>leagues</code> row, for example <code>us-election-2028</code> with <code>sport=&#x27;politics&#x27;</code>.</li><li><strong><code>events.away</code> and <code>events.home</code> are both <code>NOT NULL jsonb</code>.</strong> A yes/no election market has neither. Either the candidate goes in <code>home</code> with a synthetic <code>No</code> in <code>away</code>, or those columns get relaxed. This is the main schema friction and it is a kaz-control migration, so it is a product call.</li><li><code>leagues.sgp_factor</code> and <code>packages/core/src/sgpRules.ts</code> assume team sports. Cross-race correlation is a real modelling question and is out of scope here; the mutually-exclusive flag is the minimum needed to stop an impossible parlay.</li><li><code>pricing_margins.market_kind</code> is a free string, so <code>election</code> needs no schema change there.</li></ul>
 <hr>
 <h2 id="8-front-end-changes">8. Front-end changes</h2>
-<ul><li><code>app/src/data/priceSocket.ts</code> builds its URL from <code>API_URL</code>. Add</li></ul>
-<p><code>VITE_SOCKET_URL</code> with <code>API_URL</code> as the fallback, so nothing breaks when the variable is unset.</p>
-<ul><li><strong>The real fix is resume.</strong> That file reconnects with exponential backoff but</li></ul>
-<p>never tells the server where it left off, so every reconnect re-fetches the whole board. Sending <code>?since=&lt;lastSeq&gt;</code> and replaying from <code>change_log</code> is the single change that proves the cache is worth building.</p>
-<ul><li>It already sends <code>{&quot;type&quot;:&quot;ack&quot;,&quot;seq&quot;:n}</code>, so the latency instrument exists</li></ul>
-<p>and kaz-socket keeps the same contract.</p>
-<ul><li><code>admin/src/pages/Odds.tsx</code>, <code>Trading.tsx</code> and <code>Support.tsx</code> each open a raw</li></ul>
-<p><code>WebSocket</code> against the API host; same environment change.</p>
-<ul><li><code>admin/src/lib/api.ts</code> and <code>app/src/config/dataSource.ts</code> are the two places</li></ul>
-<p>the base URL is resolved.</p>
+<ul><li><code>app/src/data/priceSocket.ts</code> builds its URL from <code>API_URL</code>. Add <code>VITE_SOCKET_URL</code> with <code>API_URL</code> as the fallback, so nothing breaks when the variable is unset.</li><li><strong>The real fix is resume.</strong> That file reconnects with exponential backoff but never tells the server where it left off, so every reconnect re-fetches the whole board. Sending <code>?since=&lt;lastSeq&gt;</code> and replaying from <code>change_log</code> is the single change that proves the cache is worth building.</li><li>It already sends <code>{&quot;type&quot;:&quot;ack&quot;,&quot;seq&quot;:n}</code>, so the latency instrument exists and kaz-socket keeps the same contract.</li><li><code>admin/src/pages/Odds.tsx</code>, <code>Trading.tsx</code> and <code>Support.tsx</code> each open a raw <code>WebSocket</code> against the API host; same environment change.</li><li><code>admin/src/lib/api.ts</code> and <code>app/src/config/dataSource.ts</code> are the two places the base URL is resolved.</li></ul>
 <hr>
 <h2 id="9-the-demo">9. The demo</h2>
 <p><code>npm run demo</code> in <code>kaz-socket</code> starts the service, applies the <code>socket</code> migrations, connects the Kalshi elections source and the Polymarket socket, and serves a page showing:</p>
 <ul><li>live election ticks from both venues,</li><li>the sequence number advancing,</li><li>acknowledgement latency,</li><li>the TTL coalescing visibly suppressing ticks,</li><li>a forced disconnect followed by a resume from <code>?since=</code> with no gap.</li></ul>
 <hr>
 <h2 id="10-what-is-not-in-scope">10. What is not in scope</h2>
-<ul><li>No kaz-control edits. The adapter is documented, not written.</li><li>No change to the drever <code>pandora.danchrow.com</code> socket, per the skin plan&#x27;s</li></ul>
-<p>Phase 2 deferral.</p>
-<ul><li>No real credentials and no real-money anything, matching kaz-control&#x27;s</li></ul>
-<p>local-build rule.</p>
-<ul><li>No work on the parked Phase 1 items, which wait on the GCP account and</li></ul>
-<p><code>OPTIC_API_KEY</code>.</p>
+<ul><li>No kaz-control edits. The adapter is documented, not written.</li><li>No change to the drever <code>pandora.danchrow.com</code> socket, per the skin plan&#x27;s Phase 2 deferral.</li><li>No real credentials and no real-money anything, matching kaz-control&#x27;s local-build rule.</li><li>No work on the parked Phase 1 items, which wait on the GCP account and <code>OPTIC_API_KEY</code>.</li></ul>
 <footer>
-  <p>Generated 2026-10-02 01:26 UTC from <code>docs/PLAN.md</code>, which
+  <p>Generated 2026-10-02 01:27 UTC from <code>docs/PLAN.md</code>, which
   is the source of this page. Every figure marked measured was taken from an
   anonymous public endpoint.</p>
 </footer>
