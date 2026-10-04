@@ -37,3 +37,12 @@ Thumbs.db
 .vscode/
 *.swp
 *~
+
+# UI captures and galleries live in the CDN (Cloudflare R2, assets.kaz.markets),
+# not in git. The pattern is <dir>/* so a directory can keep a marker README.
+# See kaz-markets/.github -> docs/RUNNING-ON-GCP.md.
+**/screens/*
+!**/screens/README.md
+**/qa/shots/*
+!**/qa/shots/README.md
+sim/report/
