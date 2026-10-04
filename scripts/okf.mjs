@@ -169,13 +169,25 @@ if (indexText !== null && !write) {
 
 // --------------------------------------------------------- doc freshness
 
+/**
+ * A shell glob (`*`, `**`, `?`) as a RegExp anchored to the whole path.
+ *
+ * `**` is replaced through a placeholder, not inline: replacing it with `.*`
+ * first would leave a `*` for the single-star pass below to rewrite into
+ * `[^/]*`, so `src/**` became `src/.[^/]*` and never matched a nested path.
+ * `**\/` is the zero-or-more-directories form, so `a/**\/b` matches `a/b` too.
+ */
 function globToRegExp(glob) {
-  const escaped = glob.replace(/[.+^${}()|[\]\\]/g, "\\$&");
-  const body = escaped
-    .replace(/\*\*\//g, "(?:.*/)?")
-    .replace(/\*\*/g, ".*")
+  const DOUBLE = "\u0000"; // any, including separators (**)
+  const DIRS = "\u0001"; // zero or more path segments (**\/)
+  const body = glob
+    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+    .replace(/\*\*\//g, DIRS)
+    .replace(/\*\*/g, DOUBLE)
     .replace(/\*/g, "[^/]*")
-    .replace(/\?/g, "[^/]");
+    .replace(/\?/g, "[^/]")
+    .replaceAll(DIRS, "(?:.*/)?")
+    .replaceAll(DOUBLE, ".*");
   return new RegExp(`^${body}$`);
 }
 
