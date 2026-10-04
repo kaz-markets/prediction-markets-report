@@ -108,6 +108,19 @@ We are in demo. New surfaces ship behind a flag, off by default. No production c
 no live providers, no real traffic, no public write path. Seed data is fake. Gating is the
 rule, not the exception.
 
+## Running things on GCP
+
+The platform runs on GCP. The free-tier rule and where each piece runs are in
+`docs/HOSTING.md`; hostname wiring is in `docs/DOMAINS.md`; the day-to-day commands are in
+`docs/RUNNING-ON-GCP.md`. Three things are rules, not advice:
+
+- **No paid SKU without the owner's decision, in writing.** Free tier means Always Free SKUs,
+  never the trial credit.
+- **Deploy with Workload Identity Federation, never a service-account key.**
+- **Captures and galleries are never committed.** Screenshots, QA sweeps and archives live in
+  the CDN (Cloudflare R2, `assets.kaz.markets`); git holds code and runtime assets only. See
+  `docs/RUNNING-ON-GCP.md` for the upload path.
+
 ## Frontmatter
 
 Every file in `docs/` starts with these fields. Keep them true.
